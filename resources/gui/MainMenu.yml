@@ -1,0 +1,55 @@
+name: test1
+
+position: [200, 200]
+size: [200, 10]
+
+elements:
+
+  HelloButton:
+    position: [100, 100]
+    size: [-100, 100]
+    text: "Hello, World!"
+    
+  ExitButton:
+    position: [-10, -10]
+    size: [100, 40]
+    text: "X"
+    onClick: "exit"
+    
+  OtherButton:
+    type: "notButton"
+    text: "not a button! :o"
+
+  GridContainer1:
+    gridSize: [2,2]
+    
+    elements:
+    
+      LolzButton:
+        position: [1,0]
+        text: "yogurt"
+
+  GridContainer2:
+    gridSize: [1, 5]
+    
+    elements:
+    
+      PogButton:
+        position: [0, 4]
+        text: "twitch.tv/"
+      
+      GridContainer3:
+        gridSize: [5, 1]
+        
+        elements:
+          
+          FinalButton:
+            position: [2, 0]
+            size: [2, 1]
+
+metadata: {
+  meta: "who's that?",
+  urMom: "gae"
+  }
+
+testString: "testString pog"
