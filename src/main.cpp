@@ -18,7 +18,7 @@ int main(int argc, char* args[]) {
 	
 	EngineCore::broadcast(engineEvent);
 	
-	EngineCore::broadcast("GUIShow", "gui/TestMenu2.yml");
+	EngineCore::broadcast("GUIShow", "gui/Soundboard.yml");
 	
 	EngineCore::start();
 	

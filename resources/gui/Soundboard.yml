@@ -1,0 +1,101 @@
+elements:
+  ListContainer:
+    gridSize: [2, 1]
+    
+    elements:
+      BoardsContainer:
+        position: [0, 0]
+        
+        elements:
+          BoardsList:
+            position: [10, 10]
+            size: [-90, -40]
+            
+            #TODO: add list definition
+            
+      SoundsContainer:
+        position: [1, 0]
+        
+        elements:
+          BoardsList:
+            position: [90, 10]
+            size: [-10, -40]
+            
+            #TODO: add list definition
+  
+  ButtonsContainer:
+    elements:
+      PlaySound:
+        position: [-60, 15]
+        size: [120, 30]
+        centerX:
+        
+        text: \$playSound\
+        
+        onClick: SBPlaySound\\\$SoundBoard.sounds\
+      
+      StopSounds:
+        position: [-60, 50]
+        size: [120, 30]
+        centerX:
+        
+        text: \$stopSounds\
+        
+        onClick: SBStopSounds
+      
+      SoundBinding:
+        position: [-80, 90]
+        size: [160, 30]
+        centerX:
+        toggle:
+        
+        text: \$soundBind\
+        
+        onClick: SBSoundBinding
+        onRelease: SBSoundBindingR
+        
+      BoardBinding:
+        position: [-80, 125]
+        size: [160, 30]
+        centerX:
+        toggle:
+        
+        text: \$boardBind\
+        
+        onClick: SBBoardBinding
+        onRelease: SBBoardBindingR
+        
+      ClearBinding:
+        position: [-80, 160]
+        size: [160, 30]
+        centerX:
+        toggle:
+        
+        text: \$clearBinding\
+        
+        onClick: SBClearBinding
+      
+      SettingsButton:
+        position: [-65, -15]
+        size: [130, 30]
+        centerX:
+        
+        text: \$settingsMenu\
+        
+        onClick: GUIShow\\SettingsMenu
+        
+      ResetButton:
+        position: [-35, -1]
+        size: [70, 30]
+        centerX:
+        
+        text: \$settingsMenu\
+        
+        onClick: GUIShow\\SettingsMenu
+  
+  InfoBox:
+    position: [0, -1]
+    size: [120, 30]
+    
+    text: \$programNameVersion\
+        

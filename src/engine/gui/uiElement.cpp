@@ -14,7 +14,7 @@ void UIElement::alignElement(UIElement* parentPtr, UIElement* elementPtr) {
 	if (parentPtr->isGridContainer())
 		parentSize = parentPtr->getGridSize();
 	else
-		parentSize = parentPtr->position2;
+		parentSize = parentPtr->getSize();
 	
 	//initializing positional data
 	elementPtr->position = elementPtr->defPosition;
@@ -23,15 +23,20 @@ void UIElement::alignElement(UIElement* parentPtr, UIElement* elementPtr) {
 	
 	//handling 'stretching'
 	if (elementPtr->defSize.x < 0)
-		elementPtr->position2.x = parentSize.x + elementPtr->defSize.x - elementPtr->position.x;
+		elementPtr->position2.x = parentSize.x + elementPtr->defSize.x+1 - abs(elementPtr->position.x);
 	if (elementPtr->defSize.y < 0)
-		elementPtr->position2.y = parentSize.y + elementPtr->defSize.y - elementPtr->position.y;
+		elementPtr->position2.y = parentSize.y + elementPtr->defSize.y+1 - abs(elementPtr->position.y);
 	
-	//handling right and bottom alignment
-	if (elementPtr->defPosition.x < 0)
-		elementPtr->position.x+= parentSize.x - elementPtr->position2.x;
-	if (elementPtr->defPosition.y < 0)
-		elementPtr->position.y+= parentSize.y - elementPtr->position2.y;
+	//handling right, bottom, and center alignment
+	if (elementPtr->metadata.find("centerX") != elementPtr->metadata.end())
+		elementPtr->position.x+= parentSize.x/2;
+	else if (elementPtr->defPosition.x < 0)
+		elementPtr->position.x+= parentSize.x - elementPtr->position2.x+1;
+		
+	if (elementPtr->metadata.find("centerY") != elementPtr->metadata.end())
+		elementPtr->position.y+= parentSize.y/2;
+	else if (elementPtr->defPosition.y < 0)
+		elementPtr->position.y+= parentSize.y - elementPtr->position2.y+1;
 		
 	//handling grid container alignment
 	if (parentPtr->isGridContainer()) {
