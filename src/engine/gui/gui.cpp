@@ -8,6 +8,8 @@ SDL_Surface* windowSurface = NULL;
 SDL_Surface* testImage = NULL;
 SDL_Surface* testImage2 = NULL;
 
+UIElement rootElement;
+
 void GUI::initialize() {
 	printf("--System GUI Initializing\n");
 	
@@ -18,6 +20,8 @@ void GUI::initialize() {
 	initSDL();
 	//loadMedia();
 	//tempDrawFunction();
+	
+	rootElement.position2 = {windowWidth, windowHeight};
 	
 	std::thread(windowLoop).detach();
 	
@@ -52,7 +56,7 @@ void loadGUI(std::string filePath) {
 	
 	UIElement menu = UIParser::parseUIElement(ymlRoot);
 	
-	UIElement::alignElement(NULL, &menu);
+	UIElement::alignElement(&rootElement, &menu);
 	
 	Renderer::start();
 	Renderer::renderElement(menu);

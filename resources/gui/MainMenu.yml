@@ -1,8 +1,3 @@
-name: test1
-
-position: [200, 200]
-size: [200, 10]
-
 elements:
 
   HelloButton:
@@ -46,10 +41,19 @@ elements:
           FinalButton:
             position: [2, 0]
             size: [2, 1]
+  
+  VersionBox:
+    position: [10, -10]
+    size: [120, 40]
+    
+    text: \$programName\
+          \$programVersion\
+  
+  TestBox:
+    position: [-20, 400]
+    size: [100, 100]
 
-metadata: {
-  meta: "who's that?",
-  urMom: "gae"
-  }
+meta: "who's that?"
+urMom: "gae"
 
 testString: "testString pog"

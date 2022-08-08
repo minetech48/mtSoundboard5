@@ -7,16 +7,16 @@ void Renderer::renderElement(UIElement element) {
 	// 	element.metadata["name"].as<std::string>().c_str(),
 	// 	element.position.x,
 	// 	element.position.y,
-	// 	element.position2.x,
-	// 	element.position2.y
+	// 	element.size.x,
+	// 	element.size.y
 	// );
 	
 	//rendering element/container
 	SDL_Rect rect = {
 		element.position.x,
 		element.position.y,
-		element.position2.x,
-		element.position2.y
+		element.position2.x - element.position.x,
+		element.position2.y - element.position.y
 	};
 	
 	SDL_SetRenderDrawColor(sdl_renderer, 0xFF, 0x00, 0x00, 0xFF);

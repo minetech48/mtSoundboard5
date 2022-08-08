@@ -1,0 +1,12 @@
+gridSize: [5, 5]
+
+elements:
+  TestBox1:
+    position: [1, 0]
+  
+  TestBox2:
+    position: [-1, 1]
+  
+  TestBox3:
+    position: [1, 2]
+    size: [-1, 1]

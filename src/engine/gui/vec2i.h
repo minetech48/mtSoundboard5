@@ -9,11 +9,55 @@ struct vec2i {
 	
 	int x = 0, y = 0;
 	
+	//operators
 	vec2i operator+(vec2i &vec2) {
 		return vec2i(
 			this->x + vec2.x,
 			this->y + vec2.x
 		);
+	}
+	
+	vec2i& operator+=(vec2i &vec2) {
+		this->x+= vec2.x;
+		this->y+= vec2.y;
+		
+		return *this;
+	}
+	
+	vec2i operator-(vec2i &vec2) {
+		return vec2i(
+			this->x - vec2.x,
+			this->y - vec2.x
+		);
+	}
+	
+	vec2i& operator-=(vec2i &vec2) {
+		this->x-= vec2.x;
+		this->y-= vec2.y;
+		
+		return *this;
+	}
+	
+	
+	
+	vec2i operator*(vec2i &vec2) {
+		return vec2i(
+			this->x * vec2.x,
+			this->y * vec2.x
+		);
+	}
+	
+	vec2i& operator*=(vec2i &vec2) {
+		this->x*= vec2.x;
+		this->y*= vec2.y;
+		
+		return *this;
+	}
+	vec2i& mul(int mul) {
+		this->x*= mul;
+		this->y*= mul;
+		
+		return *this;
 	}
 };
 

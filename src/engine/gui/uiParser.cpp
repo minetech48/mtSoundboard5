@@ -6,9 +6,6 @@ void UIParser::parseUIElement(UIElement* elementPtr, YAML::Node root) {
 	if (root["position"]) elementPtr->defPosition = root["position"].as<vec2i>();
 	if (root["size"]) elementPtr->defSize = root["size"].as<vec2i>();
 	
-	if (root["metadata"]) 
-		elementPtr->metadata = root["metadata"].as<std::map<std::string, YAML::Node>>();
-	
 	if (root["elements"]) {
 		YAML::Node elements = root["elements"];
 		
@@ -20,7 +17,6 @@ void UIParser::parseUIElement(UIElement* elementPtr, YAML::Node root) {
 	root.remove("position");
 	root.remove("size");
 	
-	root.remove("metadata");
 	root.remove("elements");
 	
 	for (YAML::const_iterator i = root.begin(); i != root.end(); i++) {
