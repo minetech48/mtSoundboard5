@@ -55,6 +55,8 @@ void loadGUI(std::string filePath) {
 	// printf("%s \n", str.c_str());
 	
 	UIElement menu = UIParser::parseUIElement(ymlRoot);
+	menu.name = filePath.substr(filePath.find_last_of('/')+1, filePath.find_last_of('.')-1);
+	printf("menuname: %s\n", menu.name.c_str());
 	
 	UIElement::alignElement(&rootElement, &menu);
 	
@@ -98,6 +100,11 @@ bool initSDL() {
 		printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
 		return false;
 	}
+	
+	if(TTF_Init() == -1) {
+		printf( "SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError() );
+		return false;
+	}
 
 	//Initializing SDL IMG
 	int imgFlags = IMG_INIT_PNG;
@@ -119,8 +126,18 @@ bool initSDL() {
 		printf("Failed to create renderer: %s\n", SDL_GetError());
 		return false;
 	}
-	
 	Renderer::setRenderer(gRenderer);
+	
+	//temp
+	TTF_Font* font = TTF_OpenFont("resources/FreeMono.ttf", 22);
+	if (font == NULL) {
+		printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
+		return false;
+	}
+	printf("Font loading success!\n");
+	
+	Renderer::addFont("primary", font);
+	Renderer::setFont("primary");
 
 	return true;
 }
@@ -131,7 +148,7 @@ bool loadMedia() {
 		printf("Unable to load image! SDL Error: %s\n", SDL_GetError());
 		return false;
 	}
-	
+		
 	testImage2 = IMG_Load("resources/Hello World.png");
 	if (testImage2 == NULL) {
 		printf("Unable to load image! SDL Error: %s\n", IMG_GetError());
@@ -161,8 +178,10 @@ void endSDL() {
 	SDL_DestroyWindow(window);
 	window = NULL;
 	
-	Renderer::setRenderer(NULL);
+	Renderer::close();
 	
 	//Quit SDL subsystems
 	SDL_Quit();
+	IMG_Quit();
+	TTF_Quit();
 }

@@ -76,7 +76,7 @@ elements:
         onClick: SBClearBinding
       
       SettingsButton:
-        position: [-65, -15]
+        position: [-65, -45]
         size: [130, 30]
         centerX:
         
@@ -89,7 +89,7 @@ elements:
         size: [70, 30]
         centerX:
         
-        text: \$settingsMenu\
+        text: \$resetButton\
         
         onClick: GUIShow\\SettingsMenu
   

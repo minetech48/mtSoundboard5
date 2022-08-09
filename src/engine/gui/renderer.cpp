@@ -2,6 +2,9 @@
 
 static SDL_Renderer* sdl_renderer = NULL;
 
+static std::unordered_map<std::string, TTF_Font*> fonts;
+static TTF_Font* currentFont = NULL;
+
 void Renderer::renderElement(UIElement element) {
 	// printf("Renderer: %s: %d:%d:%d:%d\n",
 	// 	element.metadata["name"].as<std::string>().c_str(),
@@ -23,6 +26,10 @@ void Renderer::renderElement(UIElement element) {
 	
 	SDL_RenderDrawRect(sdl_renderer, &rect);
 	
+	if (element.containsData("text"))
+		renderText(element.getDataString("text"), element.position.x, element.position.y);
+	//renderText(element.name, element.position.x, element.position.y);
+	
 	//rendering children (recursive)
 	if (!element.elements.empty()) {
 		for (auto const& child : element.elements) {
@@ -31,7 +38,31 @@ void Renderer::renderElement(UIElement element) {
 	}
 }
 
+void Renderer::renderText(std::string text, int x, int y) {
+	printf("text: %s\n", text.c_str());
+	SDL_Surface* textSurface = TTF_RenderText_Solid(
+		currentFont,
+		text.c_str(),
+		{0x00, 0xff, 0x00});
+	
+	if(textSurface == NULL) {
+		printf("Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError());
+		return;
+	}
+	
+	SDL_Rect drawRect = textSurface->clip_rect;
+	drawRect.x+= x;
+	drawRect.y+= y;
+	
+	SDL_RenderCopy(sdl_renderer,
+		SDL_CreateTextureFromSurface(sdl_renderer, textSurface),
+		NULL, &drawRect);
+	
+	
+}
 
+
+//renderer
 void Renderer::setRenderer(SDL_Renderer* renderer) {
 	if (sdl_renderer != NULL)
 		SDL_DestroyRenderer(sdl_renderer);
@@ -39,11 +70,39 @@ void Renderer::setRenderer(SDL_Renderer* renderer) {
 	sdl_renderer = renderer;
 }
 
+//fonts
+void Renderer::addFont(std::string fontName, TTF_Font* font) {
+	if (fonts.find(fontName) != fonts.end())
+		TTF_CloseFont(fonts[fontName]);
+	
+	fonts.insert({fontName, font});
+}
+bool Renderer::setFont(std::string fontName) {
+	if (fonts.find(fontName) == fonts.end())
+		return false;
+	
+	currentFont = fonts[fontName];
+	return true;
+}
+void Renderer::clearFonts() {
+	for (auto const& font : fonts) {
+		printf("test %s:\n", font.first.c_str());
+		TTF_CloseFont(fonts[font.first]);
+	}
+	fonts.clear();
+}
+
+//rendering actions
 void Renderer::start() {
-	SDL_SetRenderDrawColor(sdl_renderer, 0x00, 0x00, 0xff, 0xff);
+	SDL_SetRenderDrawColor(sdl_renderer, 0x00, 0x00, 0xff, 0xff);//background color
 	SDL_RenderClear(sdl_renderer);
 }
 
 void Renderer::finish() {
 	SDL_RenderPresent(sdl_renderer);
+}
+
+void Renderer::close() {
+	clearFonts();
+	setRenderer(NULL);
 }

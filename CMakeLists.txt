@@ -11,6 +11,7 @@ set(CMAKE_CXX_STANDARD 11)
 # find libs
 find_package(SDL2 CONFIG REQUIRED)
 find_package(sdl2-image CONFIG REQUIRED)
+find_package(SDL2_ttf CONFIG REQUIRED)
 find_package(yaml-cpp CONFIG REQUIRED)
 
 
@@ -36,4 +37,6 @@ target_link_libraries(${PROJECT_NAME}
 	SDL2::SDL2_image
 	
 	yaml-cpp
+	
+	$<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,SDL2_ttf::SDL2_ttf,SDL2_ttf::SDL2_ttf-static>
 )

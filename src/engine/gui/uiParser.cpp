@@ -11,6 +11,7 @@ void UIParser::parseUIElement(UIElement* elementPtr, YAML::Node root) {
 		
 		for (YAML::const_iterator i = elements.begin(); i != elements.end(); i++) {
 			elementPtr->elements[i->first.as<std::string>()] = parseUIElement(i->second);
+			elementPtr->elements[i->first.as<std::string>()].name = i->first.as<std::string>();
 		}
 	}
 	
