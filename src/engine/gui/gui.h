@@ -18,6 +18,7 @@ class GUI : public EngineSystem {
 };
 
 void loadGUI(std::string filePath);
+void setTheme(std::string filePath);
 
 void windowLoop();
 void tempDrawFunction();

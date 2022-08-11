@@ -1,3 +1,6 @@
+#ifndef RENDERER_H
+#define RENDERER_H
+
 #include "uiElement.h"
 #include <SDL2/SDL.h>
 #include <SDL_ttf.h>
@@ -14,9 +17,15 @@ class Renderer {
 		static bool setFont(std::string fontName);
 		static void clearFonts();
 		
+		static void addColor(std::string colorName, SDL_Color color);
+		static bool setColor(std::string colorName);
+		static void clearColors();
+		
 		
 		static void start();
 		static void finish();
 		
 		static void close();
 };
+
+#endif

@@ -5,6 +5,9 @@ static SDL_Renderer* sdl_renderer = NULL;
 static std::unordered_map<std::string, TTF_Font*> fonts;
 static TTF_Font* currentFont = NULL;
 
+static std::unordered_map<std::string, SDL_Color> colors;
+static SDL_Color currentColor;
+
 void Renderer::renderElement(UIElement element) {
 	// printf("Renderer: %s: %d:%d:%d:%d\n",
 	// 	element.metadata["name"].as<std::string>().c_str(),
@@ -39,7 +42,7 @@ void Renderer::renderElement(UIElement element) {
 }
 
 void Renderer::renderText(std::string text, int x, int y) {
-	printf("text: %s\n", text.c_str());
+	//printf("text: %s\n", text.c_str());
 	SDL_Surface* textSurface = TTF_RenderText_Solid(
 		currentFont,
 		text.c_str(),
@@ -86,10 +89,32 @@ bool Renderer::setFont(std::string fontName) {
 }
 void Renderer::clearFonts() {
 	for (auto const& font : fonts) {
-		printf("test %s:\n", font.first.c_str());
 		TTF_CloseFont(fonts[font.first]);
 	}
 	fonts.clear();
+}
+
+//colors
+void Renderer::addColor(std::string colorName, SDL_Color color) {
+	colors.insert({colorName, color});
+}
+bool Renderer::setColor(std::string colorName) {
+	if (colors.find(colorName) == colors.end())
+		return false;
+	
+	currentColor = colors[colorName];
+	
+	if (sdl_renderer != NULL)
+		SDL_SetRenderDrawColor(sdl_renderer,
+			currentColor.r,
+			currentColor.g,
+			currentColor.b,
+			currentColor.a);
+	
+	return true;
+}
+void Renderer::clearColors() {
+	colors.clear();
 }
 
 //rendering actions

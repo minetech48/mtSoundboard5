@@ -1,0 +1,17 @@
+Fonts:
+  Default:
+    fontName: FreeMono
+    fontSize: 16
+  
+  Seconary:
+    fontName: FreeMono
+    fontSize: 12
+
+Colors:
+  primary: [0x60, 0x60, 0x60]
+  seconary: [0xff, 0xff, 0xff]
+  
+  background: [0x1F, 0x1F, 0x1F]
+  border: seconary
+  
+  textDefault: [0, 0, 0]

@@ -35,3 +35,84 @@ UIElement UIParser::parseUIElement(YAML::Node root) {
 	
 	return element;
 }
+
+
+void UIParser::loadTheme(YAML::Node root) {
+	for (YAML::const_iterator i = root["Fonts"].begin(); i != root["Fonts"].end(); i++) {
+		
+		TTF_Font* font = TTF_OpenFont(
+			findFont(i->second["fontName"].as<std::string>()).c_str(),
+			i->second["fontSize"].as<int>());
+			
+		if (font == NULL) {
+			printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
+			continue;
+		}
+		
+		Renderer::addFont(i->first.as<std::string>(), font);
+		
+		//printf("test: %s : %s\n", i->first.as<std::string>().c_str(), i->second["fontName"].as<std::string>().c_str());
+	}
+	
+	for (YAML::const_iterator i = root["Colors"].begin(); i != root["Colors"].end(); i++) {
+		if (i->second.IsSequence())
+			Renderer::addColor(i->first.as<std::string>(), i->second.as<SDL_Color>());
+		else//scalar/ string
+			Renderer::addColor(i->first.as<std::string>(),
+							root["Colors"][i->second.as<std::string>()].as<SDL_Color>());
+	}
+}
+
+#define checkFile(name) if (std::filesystem::exists({name})) return name;
+std::string UIParser::findFont(std::string fileName) {
+	namespace fs = std::filesystem;
+	fileName+=".ttf";
+	
+	//if (fs::exists({fileName})) return fileName;
+	
+	//if (checkFile(fileName)) return fileName;
+	
+	checkFile(fileName);
+	checkFile("resources/" + fileName);
+	checkFile("resources/fonts/" + fileName);
+	
+	return fileName;
+}
+
+
+//YAML Object Conversions
+namespace YAML {
+	//SDL_Color
+		template<>
+		struct convert<SDL_Color> {
+		static Node encode(const SDL_Color& rhs) {
+			Node node;
+			
+			node.push_back(rhs.r);
+			node.push_back(rhs.g);
+			node.push_back(rhs.b);
+			
+			if (rhs.a != 255)
+				node.push_back(rhs.a);
+			
+			return node;
+		}
+
+		static bool decode(const Node& node, SDL_Color& rhs) {
+			if(!node.IsSequence() || node.size() < 3) {
+				return false;
+			}
+			
+			rhs.r = node[0].as<Uint8>();
+			rhs.g = node[1].as<Uint8>();
+			rhs.b = node[2].as<Uint8>();
+			
+			if(node.size() == 4)
+				rhs.a = node[3].as<Uint8>();
+			else
+				rhs.a = 255;
+			
+			return true;
+		}
+	};
+}

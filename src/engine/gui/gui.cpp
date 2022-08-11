@@ -39,6 +39,9 @@ void GUI::handleEvent(EngineEvent event) {
 		case hash("GUIShow"):
 			loadGUI(event.arg1);
 			break;
+		case (hash("GUISetTheme")):
+			setTheme(event.arg1);
+			break;
 		
 		case hash("Shutdown"):
 			endSDL();
@@ -55,8 +58,8 @@ void loadGUI(std::string filePath) {
 	// printf("%s \n", str.c_str());
 	
 	UIElement menu = UIParser::parseUIElement(ymlRoot);
-	menu.name = filePath.substr(filePath.find_last_of('/')+1, filePath.find_last_of('.')-1);
-	printf("menuname: %s\n", menu.name.c_str());
+	menu.name = filePath.substr(filePath.find_last_of('/')+1, filePath.find_last_of(".")-4);
+	//printf("menuname: %s\n", menu.name.c_str());
 	
 	UIElement::alignElement(&rootElement, &menu);
 	
@@ -65,6 +68,17 @@ void loadGUI(std::string filePath) {
 	Renderer::finish();
 	
 	//printf("%s\n", menu.elements["OtherButton"].text.c_str());
+}
+
+//parsing theme file
+void setTheme(std::string filePath) {
+	Renderer::clearFonts();
+	Renderer::clearColors();
+	
+	YAML::Node ymlRoot = YAML::LoadFile("resources/" + filePath);
+	UIParser::loadTheme(ymlRoot);
+	
+	Renderer::setFont("Default");
 }
 
 //window (input) handling
@@ -129,15 +143,14 @@ bool initSDL() {
 	Renderer::setRenderer(gRenderer);
 	
 	//temp
-	TTF_Font* font = TTF_OpenFont("resources/FreeMono.ttf", 22);
-	if (font == NULL) {
-		printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
-		return false;
-	}
-	printf("Font loading success!\n");
+	// TTF_Font* font = TTF_OpenFont("resources/FreeMono.ttf", 22);
+	// if (font == NULL) {
+	// 	printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
+	// 	return false;
+	// }
+	// printf("Font loading success!\n");
 	
-	Renderer::addFont("primary", font);
-	Renderer::setFont("primary");
+	// Renderer::addFont("primary", font);
 
 	return true;
 }

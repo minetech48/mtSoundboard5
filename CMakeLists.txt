@@ -5,8 +5,8 @@ project(main)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Settings C/C++ standard
-set(CMAKE_C_STANDARD 11)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_C_STANDARD 17)
+set(CMAKE_CXX_STANDARD 23)
 
 # find libs
 find_package(SDL2 CONFIG REQUIRED)
