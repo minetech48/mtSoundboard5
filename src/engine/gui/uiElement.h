@@ -36,12 +36,14 @@ struct UIElement {
 	bool containsData(std::string key) {return metadata.find(key) != metadata.end();}
 	std::string getDataString(std::string key) {return metadata[key].as<std::string>();}
 	
-	//container functions
+	//element type checks
 	bool isContainer() {return !elements.empty();}
 	bool isGridContainer() {return containsData("gridSize");}
 	
-	public:
-		static void alignElement(UIElement* parentPtr, UIElement* elementPtr);
+	bool isButton() {return containsData("onClick");}
+	
+	
+	static void alignElement(UIElement* parentPtr, UIElement* elementPtr);
 };
 
 #endif

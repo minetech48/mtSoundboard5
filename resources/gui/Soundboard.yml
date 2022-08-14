@@ -30,7 +30,7 @@ elements:
         size: [120, 30]
         centerX:
         
-        text: \$playSound\
+        text: playSound
         
         onClick: SBPlaySound\\\$SoundBoard.sounds\
       
@@ -39,7 +39,7 @@ elements:
         size: [120, 30]
         centerX:
         
-        text: \$stopSounds\
+        text: stopSounds
         
         onClick: SBStopSounds
       
@@ -49,7 +49,7 @@ elements:
         centerX:
         toggle:
         
-        text: \$soundBind\
+        text: soundBind
         
         onClick: SBSoundBinding
         onRelease: SBSoundBindingR
@@ -60,7 +60,7 @@ elements:
         centerX:
         toggle:
         
-        text: \$boardBind\
+        text: boardBind
         
         onClick: SBBoardBinding
         onRelease: SBBoardBindingR
@@ -71,7 +71,7 @@ elements:
         centerX:
         toggle:
         
-        text: \$clearBinding\
+        text: clearBinding
         
         onClick: SBClearBinding
       
@@ -80,7 +80,7 @@ elements:
         size: [130, 30]
         centerX:
         
-        text: \$settingsMenu\
+        text: settingsMenu
         
         onClick: GUIShow\\SettingsMenu
         
@@ -89,7 +89,7 @@ elements:
         size: [70, 30]
         centerX:
         
-        text: \$resetButton\
+        text: resetButton
         
         onClick: GUIShow\\SettingsMenu
   
@@ -97,5 +97,6 @@ elements:
     position: [0, -1]
     size: [120, 30]
     
+    textFont: Secondary
     text: \$programNameVersion\
         

@@ -1,3 +1,6 @@
+#ifndef GUI_H
+#define GUI_H
+
 #include <stdio.h>
 #include <thread>
 #include <SDL.h>
@@ -25,3 +28,5 @@ void tempDrawFunction();
 bool initSDL();
 bool loadMedia();
 void endSDL();
+
+#endif

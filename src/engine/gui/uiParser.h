@@ -12,5 +12,5 @@ class UIParser {
 		static UIElement parseUIElement(YAML::Node root);
 		
 		static void loadTheme(YAML::Node root);
-		static std::string findFont(std::string fileName);
+		static std::string findFile(std::string fileName, std::string extension);
 };

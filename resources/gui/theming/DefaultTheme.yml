@@ -3,9 +3,9 @@ Fonts:
     fontName: FreeMono
     fontSize: 16
   
-  Seconary:
+  Secondary:
     fontName: FreeMono
-    fontSize: 12
+    fontSize: 14
 
 Colors:
   primary: [0x60, 0x60, 0x60]
@@ -15,3 +15,5 @@ Colors:
   border: seconary
   
   textDefault: [0, 0, 0]
+
+Language: en

@@ -5,19 +5,22 @@
 #include <SDL2/SDL.h>
 #include <SDL_ttf.h>
 
+#include "guiData.cpp"
+
 class Renderer {
 	public:
 		static void renderElement(UIElement element);
-		static void renderText(std::string text, int x, int y);
+		static void renderTextRaw(char* text, int x, int y, int centerWidth, int centerHeight);
+		
+		static void renderText(std::string text, int x, int y, int centerWidth, int centerHeight);
+		static void renderText(std::string text, int x, int y) {renderText(text, x, y, 0, 0);}
 		
 		
 		static void setRenderer(SDL_Renderer* renderer);
 		
-		static void addFont(std::string fontName, TTF_Font* font);
 		static bool setFont(std::string fontName);
-		static void clearFonts();
+		static void updateDefaultFont();
 		
-		static void addColor(std::string colorName, SDL_Color color);
 		static bool setColor(std::string colorName);
 		static void clearColors();
 		

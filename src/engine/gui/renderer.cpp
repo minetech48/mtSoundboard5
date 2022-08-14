@@ -2,10 +2,9 @@
 
 static SDL_Renderer* sdl_renderer = NULL;
 
-static std::unordered_map<std::string, TTF_Font*> fonts;
 static TTF_Font* currentFont = NULL;
+static TTF_Font* defaultFont = NULL;
 
-static std::unordered_map<std::string, SDL_Color> colors;
 static SDL_Color currentColor;
 
 void Renderer::renderElement(UIElement element) {
@@ -27,11 +26,30 @@ void Renderer::renderElement(UIElement element) {
 	
 	SDL_SetRenderDrawColor(sdl_renderer, 0xFF, 0x00, 0x00, 0xFF);
 	
-	SDL_RenderDrawRect(sdl_renderer, &rect);
+	if (!element.isContainer())
+		SDL_RenderDrawRect(sdl_renderer, &rect);
 	
-	if (element.containsData("text"))
-		renderText(element.getDataString("text"), element.position.x, element.position.y);
-	//renderText(element.name, element.position.x, element.position.y);
+	//drawing element text
+	if (element.containsData("text")) {
+		
+		//font switching
+		if (element.containsData("textFont")) {
+			setFont(element.getDataString("textFont"));
+			printf("test1: %s\n", element.getDataString("textFont").c_str());
+		}else{
+			currentFont = defaultFont;
+		}
+		
+		//text centering for buttons
+		if (element.isButton()) {
+			renderText(element.getDataString("text"),
+				 element.position.x, element.position.y,
+				 element.position2.x - element.position.x,
+				 element.position2.y - element.position.y);
+		}else{
+			renderText(element.getDataString("text"), element.position.x, element.position.y);
+		}
+	}
 	
 	//rendering children (recursive)
 	if (!element.elements.empty()) {
@@ -41,11 +59,11 @@ void Renderer::renderElement(UIElement element) {
 	}
 }
 
-void Renderer::renderText(std::string text, int x, int y) {
+void Renderer::renderTextRaw(char* text, int x, int y, int centerWidth, int centerHeight) {
 	//printf("text: %s\n", text.c_str());
 	SDL_Surface* textSurface = TTF_RenderText_Solid(
 		currentFont,
-		text.c_str(),
+		text,
 		{0x00, 0xff, 0x00});
 	
 	if(textSurface == NULL) {
@@ -57,14 +75,49 @@ void Renderer::renderText(std::string text, int x, int y) {
 	drawRect.x+= x;
 	drawRect.y+= y;
 	
+	if (centerWidth)
+		drawRect.x+= (centerWidth-drawRect.w)/2;
+	if (centerHeight)
+		drawRect.y+= (centerHeight-drawRect.h)/2;
+	
 	SDL_RenderCopy(sdl_renderer,
 		SDL_CreateTextureFromSurface(sdl_renderer, textSurface),
 		NULL, &drawRect);
-	
-	
 }
 
+//high(er) level draw functions
+#define finishString() \
+			drawStr[drawIndex] = '\0';\
+			renderTextRaw(drawStr, x, printY, centerWidth, centerHeight);
+			
+void Renderer::renderText(std::string text, int x, int y, int centerWidth, int centerHeight) {
+	text = GUIData::convertString(text);
+	
+	char drawStr[text.length()];
+	const char* textPtr = text.c_str();
+	int drawIndex = 0, printY = y;
+	
+	for (int i = 0; i < text.length(); i++) {
+		if (textPtr[i] == '\n' || (textPtr[i] == '\\' && textPtr[i+1] == 'n')) {
+			finishString();
+			drawIndex = 0;
+			
+			int textHeight = 0;
+			TTF_SizeText(currentFont, drawStr, NULL, &textHeight);
+			printY+= textHeight;
+			i++;
+			continue;
+		}
+		
+		drawStr[drawIndex++] = textPtr[i];
+	}
+	finishString();
+}
+#undef finishString
 
+
+
+//setters
 //renderer
 void Renderer::setRenderer(SDL_Renderer* renderer) {
 	if (sdl_renderer != NULL)
@@ -74,12 +127,6 @@ void Renderer::setRenderer(SDL_Renderer* renderer) {
 }
 
 //fonts
-void Renderer::addFont(std::string fontName, TTF_Font* font) {
-	if (fonts.find(fontName) != fonts.end())
-		TTF_CloseFont(fonts[fontName]);
-	
-	fonts.insert({fontName, font});
-}
 bool Renderer::setFont(std::string fontName) {
 	if (fonts.find(fontName) == fonts.end())
 		return false;
@@ -87,17 +134,12 @@ bool Renderer::setFont(std::string fontName) {
 	currentFont = fonts[fontName];
 	return true;
 }
-void Renderer::clearFonts() {
-	for (auto const& font : fonts) {
-		TTF_CloseFont(fonts[font.first]);
-	}
-	fonts.clear();
+void Renderer::updateDefaultFont() {
+	defaultFont = GUIData::getFont("Default");
+	currentFont = defaultFont;
 }
 
 //colors
-void Renderer::addColor(std::string colorName, SDL_Color color) {
-	colors.insert({colorName, color});
-}
 bool Renderer::setColor(std::string colorName) {
 	if (colors.find(colorName) == colors.end())
 		return false;
@@ -128,6 +170,6 @@ void Renderer::finish() {
 }
 
 void Renderer::close() {
-	clearFonts();
+	GUIData::clearFonts();
 	setRenderer(NULL);
 }

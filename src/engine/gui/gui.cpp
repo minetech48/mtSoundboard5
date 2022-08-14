@@ -72,14 +72,13 @@ void loadGUI(std::string filePath) {
 
 //parsing theme file
 void setTheme(std::string filePath) {
-	Renderer::clearFonts();
+	GUIData::clearFonts();
 	Renderer::clearColors();
 	
 	YAML::Node ymlRoot = YAML::LoadFile("resources/" + filePath);
 	UIParser::loadTheme(ymlRoot);
-	
-	Renderer::setFont("Default");
 }
+
 
 //window (input) handling
 void windowLoop() {

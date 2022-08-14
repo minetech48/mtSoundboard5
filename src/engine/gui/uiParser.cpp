@@ -41,7 +41,7 @@ void UIParser::loadTheme(YAML::Node root) {
 	for (YAML::const_iterator i = root["Fonts"].begin(); i != root["Fonts"].end(); i++) {
 		
 		TTF_Font* font = TTF_OpenFont(
-			findFont(i->second["fontName"].as<std::string>()).c_str(),
+			findFile(i->second["fontName"].as<std::string>(), ".ttf").c_str(),
 			i->second["fontSize"].as<int>());
 			
 		if (font == NULL) {
@@ -49,35 +49,48 @@ void UIParser::loadTheme(YAML::Node root) {
 			continue;
 		}
 		
-		Renderer::addFont(i->first.as<std::string>(), font);
+		GUIData::addFont(i->first.as<std::string>(), font);
 		
 		//printf("test: %s : %s\n", i->first.as<std::string>().c_str(), i->second["fontName"].as<std::string>().c_str());
 	}
 	
 	for (YAML::const_iterator i = root["Colors"].begin(); i != root["Colors"].end(); i++) {
 		if (i->second.IsSequence())
-			Renderer::addColor(i->first.as<std::string>(), i->second.as<SDL_Color>());
+			GUIData::addColor(i->first.as<std::string>(), i->second.as<SDL_Color>());
 		else//scalar/ string
-			Renderer::addColor(i->first.as<std::string>(),
+			GUIData::addColor(i->first.as<std::string>(),
 							root["Colors"][i->second.as<std::string>()].as<SDL_Color>());
 	}
+	
+	GUIData::setStrings(YAML::LoadFile(findFile(root["Language"].as<std::string>(), ".yml")));
+	
+	Renderer::updateDefaultFont();
 }
 
+//finding file on system
 #define checkFile(name) if (std::filesystem::exists({name})) return name;
-std::string UIParser::findFont(std::string fileName) {
+std::string UIParser::findFile(std::string fileName, std::string extension) {
 	namespace fs = std::filesystem;
-	fileName+=".ttf";
+	fileName+= extension;
 	
-	//if (fs::exists({fileName})) return fileName;
+	switch (hash(extension)) {
+		case hash(".ttf"):
+			checkFile("resources/fonts/" + fileName);
+			break;
+			
+		case hash(".yml"):
+			checkFile("resources/gui/" + fileName);
+			checkFile("resources/gui/menus/" + fileName);
+			checkFile("resources/gui/lang/" + fileName)
+			break;
+	}
 	
-	//if (checkFile(fileName)) return fileName;
-	
-	checkFile(fileName);
 	checkFile("resources/" + fileName);
-	checkFile("resources/fonts/" + fileName);
+	checkFile(fileName);
 	
-	return fileName;
+	return "FILE_NOT_FOUND";
 }
+#undef checkFile
 
 
 //YAML Object Conversions
