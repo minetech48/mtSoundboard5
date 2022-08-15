@@ -12,6 +12,7 @@ elements:
             size: [-90, -40]
             
             #TODO: add list definition
+            listName: boardsList
             
       SoundsContainer:
         position: [1, 0]
@@ -22,6 +23,7 @@ elements:
             size: [-10, -40]
             
             #TODO: add list definition
+            listName: soundsList
   
   ButtonsContainer:
     elements:

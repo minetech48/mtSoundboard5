@@ -15,6 +15,8 @@ class Renderer {
 		static void renderText(std::string text, int x, int y, int centerWidth, int centerHeight);
 		static void renderText(std::string text, int x, int y) {renderText(text, x, y, 0, 0);}
 		
+		static void drawElementRect(UIElement element);
+		
 		
 		static void setRenderer(SDL_Renderer* renderer);
 		

@@ -7,6 +7,8 @@ static TTF_Font* defaultFont = NULL;
 
 static SDL_Color currentColor;
 
+const int borderSize = 2;
+
 void Renderer::renderElement(UIElement element) {
 	// printf("Renderer: %s: %d:%d:%d:%d\n",
 	// 	element.metadata["name"].as<std::string>().c_str(),
@@ -17,25 +19,16 @@ void Renderer::renderElement(UIElement element) {
 	// );
 	
 	//rendering element/container
-	SDL_Rect rect = {
-		element.position.x,
-		element.position.y,
-		element.position2.x - element.position.x,
-		element.position2.y - element.position.y
-	};
-	
-	SDL_SetRenderDrawColor(sdl_renderer, 0xFF, 0x00, 0x00, 0xFF);
-	
-	if (!element.isContainer())
-		SDL_RenderDrawRect(sdl_renderer, &rect);
+	if (!element.isContainer() || element.isList())
+		drawElementRect(element);
 	
 	//drawing element text
 	if (element.containsData("text")) {
+		setColor("TextDefault");
 		
 		//font switching
 		if (element.containsData("textFont")) {
 			setFont(element.getDataString("textFont"));
-			printf("test1: %s\n", element.getDataString("textFont").c_str());
 		}else{
 			currentFont = defaultFont;
 		}
@@ -58,13 +51,34 @@ void Renderer::renderElement(UIElement element) {
 		}
 	}
 }
+void Renderer::drawElementRect(UIElement element) {
+	SDL_Rect rect = {
+		element.position.x,
+		element.position.y,
+		element.position2.x - element.position.x,
+		element.position2.y - element.position.y
+	};
+	
+	//SDL_SetRenderDrawColor(sdl_renderer, 0xFF, 0x00, 0x00, 0xFF);
+	
+	setColor("Border");
+	SDL_RenderFillRect(sdl_renderer, &rect);
+	
+	rect.x+= borderSize;
+	rect.y+= borderSize;
+	rect.w-= borderSize*2;
+	rect.h-= borderSize*2;
+	
+	setColor("Primary");
+	SDL_RenderFillRect(sdl_renderer, &rect);
+}
 
 void Renderer::renderTextRaw(char* text, int x, int y, int centerWidth, int centerHeight) {
 	//printf("text: %s\n", text.c_str());
 	SDL_Surface* textSurface = TTF_RenderText_Solid(
 		currentFont,
 		text,
-		{0x00, 0xff, 0x00});
+		currentColor);
 	
 	if(textSurface == NULL) {
 		printf("Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError());
@@ -86,9 +100,14 @@ void Renderer::renderTextRaw(char* text, int x, int y, int centerWidth, int cent
 }
 
 //high(er) level draw functions
+//draw string macro, adjusted for border
 #define finishString() \
 			drawStr[drawIndex] = '\0';\
-			renderTextRaw(drawStr, x, printY, centerWidth, centerHeight);
+			renderTextRaw(drawStr,\
+			x			+borderSize+1,\
+			printY		+borderSize-1,\
+			centerWidth	- (centerWidth ? (borderSize+1)*2 : 0),\
+			centerHeight- (centerHeight? (borderSize-1)*2 : 0));
 			
 void Renderer::renderText(std::string text, int x, int y, int centerWidth, int centerHeight) {
 	text = GUIData::convertString(text);
@@ -161,7 +180,7 @@ void Renderer::clearColors() {
 
 //rendering actions
 void Renderer::start() {
-	SDL_SetRenderDrawColor(sdl_renderer, 0x00, 0x00, 0xff, 0xff);//background color
+	setColor("Background");//background color
 	SDL_RenderClear(sdl_renderer);
 }
 

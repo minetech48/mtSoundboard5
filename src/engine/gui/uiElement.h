@@ -41,6 +41,7 @@ struct UIElement {
 	bool isGridContainer() {return containsData("gridSize");}
 	
 	bool isButton() {return containsData("onClick");}
+	bool isList() {return containsData("listName");}
 	
 	
 	static void alignElement(UIElement* parentPtr, UIElement* elementPtr);
