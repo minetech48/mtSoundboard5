@@ -14,6 +14,9 @@ Colors:
   Background: [0x1f, 0x1f, 0x1f]
   Border: Secondary
   
+  FocusedBorder: [150, 150, 170]
+  Active: [160, 160, 175]
+  
   TextDefault: [0xFF, 0xff, 0xff]
 
 Language: en

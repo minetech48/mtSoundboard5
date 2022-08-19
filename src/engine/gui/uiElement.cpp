@@ -47,6 +47,15 @@ void UIElement::alignElement(UIElement* parentPtr, UIElement* elementPtr) {
 	}
 	
 	//finalizing data
+	// if (elementPtr->position2.x < 0) {
+	// 	elementPtr->position2.x*= -1;
+	// 	elementPtr->position.x-= elementPtr->position2.x;
+	// }
+	// if (elementPtr->position2.y < 0) {
+	// 	elementPtr->position2.y*= -1;
+	// 	elementPtr->position.y-= elementPtr->position2.y;
+	// }
+	
 	elementPtr->position+= parentPtr->position;
 	elementPtr->position2+= elementPtr->position;
 	

@@ -93,7 +93,7 @@ elements:
         
         text: resetButton
         
-        onClick: GUIShow\\SettingsMenu
+        onClick: GUIReset
   
   InfoBox:
     position: [0, -1]

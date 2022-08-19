@@ -17,14 +17,19 @@ class GUI : public EngineSystem {
 		void initialize();
 		void handleEvent(EngineEvent event);
 		void update();
-	
 };
 
 void loadGUI(std::string filePath);
 void setTheme(std::string filePath);
+void resetGUI();
+
+void clickElement(UIElement* element);
+void unclickElement();
+
+UIElement* getHoveredElement(UIElement* element);
+bool isInBounds(UIElement element, int x, int y);
 
 void windowLoop();
-void tempDrawFunction();
 bool initSDL();
 bool loadMedia();
 void endSDL();

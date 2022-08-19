@@ -1,3 +1,5 @@
+#pragma once
+
 class GUIData {
 	public:
 		static void addColor(std::string colorName, SDL_Color color);

@@ -5,6 +5,7 @@
 
 #include "uiElement.h"
 #include "renderer.h"
+#include "guiData.h"
 
 class UIParser {
 	public:

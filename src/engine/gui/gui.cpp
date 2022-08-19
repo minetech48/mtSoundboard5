@@ -9,6 +9,13 @@ SDL_Surface* testImage = NULL;
 SDL_Surface* testImage2 = NULL;
 
 UIElement rootElement;
+UIElement* focusedElement;
+
+UIElement* clickedElement;
+
+std::map<std::string, UIElement> menus;
+	
+static int mouseX, mouseY;
 
 void GUI::initialize() {
 	printf("--System GUI Initializing\n");
@@ -22,6 +29,7 @@ void GUI::initialize() {
 	//tempDrawFunction();
 	
 	rootElement.position2 = {windowWidth, windowHeight};
+	rootElement.name = "root";
 	
 	std::thread(windowLoop).detach();
 	
@@ -32,6 +40,58 @@ void GUI::update() {
 	
 	//Update the surface
 	// SDL_UpdateWindowSurface(window);
+	
+	SDL_GetMouseState(&mouseX, &mouseY);
+	
+	//printf("Mouse position: (%d, %d)\n", mouseX, mouseY);
+	
+	for (auto const& menu : menus) {
+		UIElement* hovered = getHoveredElement(&menus[menu.first]);
+		if (hovered != focusedElement) {
+			if (focusedElement != NULL)
+				focusedElement->focused = false;
+			
+			focusedElement = hovered;
+			
+			if (focusedElement != NULL)
+				focusedElement->focused = true;
+			break;
+		}
+	}
+	
+	Renderer::start();
+	
+	for (auto const& menu : menus) {
+		Renderer::renderElement(menu.second);
+	}
+	
+	Renderer::finish();
+}
+
+UIElement* getHoveredElement(UIElement* element) {
+	UIElement* toReturn = element;
+	if (!isInBounds(*element, mouseX, mouseY)) return NULL;
+	
+	
+	if (element->isContainer()) {
+		for (auto const& child : element->elements) {
+			UIElement* hovered = getHoveredElement(&element->elements[child.first]);
+			
+			if (hovered != NULL ) {
+				toReturn = hovered;
+				break;
+			}
+		}
+	}
+	
+	if (toReturn->isFocusable()) {
+		return toReturn;
+	}
+	return NULL;
+}
+bool isInBounds(UIElement element, int x, int y) {
+	return	x > element.position.x && x < element.position2.x &&
+			y > element.position.y && y < element.position2.y;
 }
 
 void GUI::handleEvent(EngineEvent event) {
@@ -42,17 +102,21 @@ void GUI::handleEvent(EngineEvent event) {
 		case (hash("GUISetTheme")):
 			setTheme(event.arg1);
 			break;
+		case (hash("GUIReset")):
+			resetGUI();
+			break;
 		
 		case hash("Shutdown"):
 			endSDL();
 			break;
+		
 	}
 }
 
 //events
 //parsing YAML menu file
 void loadGUI(std::string filePath) {
-	YAML::Node ymlRoot = YAML::LoadFile("resources/" + filePath);
+	YAML::Node ymlRoot = YAML::LoadFile(UIParser::findFile(filePath, ".yml"));
 	
 	// std::string str = yml["elements"]["HelloButton"]["text"].as<std::string>();
 	// printf("%s \n", str.c_str());
@@ -63,9 +127,7 @@ void loadGUI(std::string filePath) {
 	
 	UIElement::alignElement(&rootElement, &menu);
 	
-	Renderer::start();
-	Renderer::renderElement(menu);
-	Renderer::finish();
+	menus[menu.name] = menu;
 	
 	//printf("%s\n", menu.elements["OtherButton"].text.c_str());
 }
@@ -75,10 +137,38 @@ void setTheme(std::string filePath) {
 	GUIData::clearFonts();
 	Renderer::clearColors();
 	
-	YAML::Node ymlRoot = YAML::LoadFile("resources/" + filePath);
+	YAML::Node ymlRoot = YAML::LoadFile(UIParser::findFile(filePath, ".yml"));
 	UIParser::loadTheme(ymlRoot);
 }
 
+void resetGUI() {
+	for (auto const& child : menus) {
+		loadGUI(child.second.name);
+	}
+}
+
+
+void clickElement(UIElement* element) {
+	if (element == NULL || !element->isButton()) return;
+	
+	if (element->isSwitch() && element->active) {
+		EngineCore::broadcast(element->getDataString("onClick")+"R");
+		element->active = false;
+	}else{
+		EngineCore::broadcast(element->getDataString("onClick"));
+		element->active = true;
+	}
+	
+	clickedElement = element;
+}
+void unclickElement() {
+	if (clickedElement == NULL || !clickedElement->isButton()) return;
+	
+	if (!clickedElement->isSwitch())
+		clickedElement->active = false;
+	
+	clickedElement = NULL;
+}
 
 //window (input) handling
 void windowLoop() {
@@ -89,22 +179,17 @@ void windowLoop() {
 			case SDL_QUIT:
 				EngineCore::running = false;
 				break;
+				
+			case SDL_MOUSEBUTTONDOWN:
+				clickElement(focusedElement);
+				break;
+				
+			case SDL_MOUSEBUTTONUP:
+				unclickElement();
+				break;
 			}
 		}
 	}
-}
-
-void tempDrawFunction() {
-	//SDL_BlitSurface(testImage, NULL, windowSurface, NULL);
-	SDL_Rect stretchRect;
-	stretchRect.x = 0;
-	stretchRect.y = 0;
-	stretchRect.w = windowWidth/2;
-	stretchRect.h = windowHeight;
-	SDL_BlitScaled(testImage, NULL, windowSurface, &stretchRect);
-
-	stretchRect.x = windowWidth / 2;
-	SDL_BlitScaled(testImage2, NULL, windowSurface, &stretchRect);
 }
 
 bool initSDL() {

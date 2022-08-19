@@ -18,8 +18,8 @@ int main(int argc, char* args[]) {
 	
 	EngineCore::broadcast(engineEvent);
 	
-	EngineCore::broadcast("GUISetTheme", "gui/theming/DefaultTheme.yml");
-	EngineCore::broadcast("GUIShow", "gui/Soundboard.yml");
+	EngineCore::broadcast("GUISetTheme", "gui/theming/DefaultTheme");
+	EngineCore::broadcast("GUIShow", "gui/Soundboard");
 	
 	EngineCore::start();
 	

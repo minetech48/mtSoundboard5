@@ -3,6 +3,7 @@
 
 static std::unordered_map<std::string, SDL_Color> colors;
 static std::unordered_map<std::string, TTF_Font*> fonts;
+static std::unordered_map<std::string, std::vector<std::string>> lists;
 
 static YAML::Node strings;
 

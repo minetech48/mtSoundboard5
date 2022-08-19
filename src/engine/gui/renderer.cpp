@@ -60,8 +60,22 @@ void Renderer::drawElementRect(UIElement element) {
 	};
 	
 	//SDL_SetRenderDrawColor(sdl_renderer, 0xFF, 0x00, 0x00, 0xFF);
+	std::string borderColor;
+	std::string backgroundColor;
+	
+	if (element.active) {
+		borderColor = "ActiveBorder";
+		backgroundColor = "Active";
+	}
+	else if (element.focused) {
+		borderColor = "FocusedBorder";
+		backgroundColor = "Focused";
+	}
 	
 	setColor("Border");
+	if (borderColor != "")
+		setColor(borderColor);
+	
 	SDL_RenderFillRect(sdl_renderer, &rect);
 	
 	rect.x+= borderSize;
@@ -70,6 +84,8 @@ void Renderer::drawElementRect(UIElement element) {
 	rect.h-= borderSize*2;
 	
 	setColor("Primary");
+	if (backgroundColor != "")
+		setColor(backgroundColor);
 	SDL_RenderFillRect(sdl_renderer, &rect);
 }
 
@@ -133,7 +149,6 @@ void Renderer::renderText(std::string text, int x, int y, int centerWidth, int c
 	finishString();
 }
 #undef finishString
-
 
 
 //setters

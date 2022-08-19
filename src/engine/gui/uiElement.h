@@ -13,6 +13,9 @@ struct UIElement {
 	std::unordered_map<std::string, YAML::Node> metadata;
 	std::unordered_map<std::string, UIElement> elements;
 	
+	bool focused = false;
+	bool active = false;
+	
 	//metadata examples
 	//onClick
 	//type
@@ -40,7 +43,10 @@ struct UIElement {
 	bool isContainer() {return !elements.empty();}
 	bool isGridContainer() {return containsData("gridSize");}
 	
+	bool isFocusable() {return !isContainer() || isList();}
+	
 	bool isButton() {return containsData("onClick");}
+	bool isSwitch() {return containsData("toggle");}
 	bool isList() {return containsData("listName");}
 	
 	
