@@ -21,6 +21,8 @@ int main(int argc, char* args[]) {
 	EngineCore::broadcast("GUISetTheme", "gui/theming/DefaultTheme");
 	EngineCore::broadcast("GUIShow", "gui/Soundboard");
 	
+	EngineCore::broadcast("GUILoadList", "lists/testList");
+	
 	EngineCore::start();
 	
 	return 0;

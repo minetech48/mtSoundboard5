@@ -33,6 +33,8 @@ void GUI::initialize() {
 	
 	std::thread(windowLoop).detach();
 	
+	loadList("lists/testList");
+	
 	printf("--System GUI Initialized.\n");
 }
 
@@ -77,7 +79,7 @@ UIElement* getHoveredElement(UIElement* element) {
 		for (auto const& child : element->elements) {
 			UIElement* hovered = getHoveredElement(&element->elements[child.first]);
 			
-			if (hovered != NULL ) {
+			if (hovered != NULL) {
 				toReturn = hovered;
 				break;
 			}
@@ -122,7 +124,7 @@ void loadGUI(std::string filePath) {
 	// printf("%s \n", str.c_str());
 	
 	UIElement menu = UIParser::parseUIElement(ymlRoot);
-	menu.name = filePath.substr(filePath.find_last_of('/')+1, filePath.find_last_of(".")-4);
+	menu.name = UIParser::getFileName(filePath);
 	//printf("menuname: %s\n", menu.name.c_str());
 	
 	UIElement::alignElement(&rootElement, &menu);
@@ -141,10 +143,32 @@ void setTheme(std::string filePath) {
 	UIParser::loadTheme(ymlRoot);
 }
 
+void loadList(std::string filePath) {
+	std::ifstream file(UIParser::findFile(filePath, ".txt"));
+	std::string listName = UIParser::getFileName(filePath);
+	
+	printf("Loading list: \"%s\" from \"%s\"\n", 
+		listName.c_str(), 
+		UIParser::findFile(filePath, ".txt").c_str());
+	
+	if (file.is_open()) {
+		std::string line;
+		GUIData::addList(listName, {"test1"});
+		
+		while (std::getline(file, line)) {
+			GUIData::getList(listName)->push_back(line);
+		}
+		
+		
+		file.close();
+	}
+}
+
 void resetGUI() {
 	for (auto const& child : menus) {
 		loadGUI(child.second.name);
 	}
+	EngineCore::broadcast("GUISetTheme", "gui/theming/DefaultTheme");
 }
 
 
@@ -186,6 +210,16 @@ void windowLoop() {
 				
 			case SDL_MOUSEBUTTONUP:
 				unclickElement();
+				break;
+			
+			case SDL_MOUSEWHEEL:
+				if (focusedElement == NULL) break;
+				
+				focusedElement->scroll+= -event.wheel.y*11;
+				
+				if (focusedElement->isList() && focusedElement->scroll < 0)
+					focusedElement->scroll = 0;
+				
 				break;
 			}
 		}

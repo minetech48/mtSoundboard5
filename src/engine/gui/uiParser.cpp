@@ -83,15 +83,26 @@ std::string UIParser::findFile(std::string fileName, std::string extension) {
 			checkFile("resources/gui/menus/" + fileName);
 			checkFile("resources/gui/lang/" + fileName)
 			break;
+			
+		case hash(".txt"):
+			checkFile("resources/gui/" + fileName);
+			checkFile("resources/gui/lists/" + fileName);
+			break;
 	}
 	
 	checkFile("resources/" + fileName);
 	checkFile(fileName);
 	
-	return "FILE_NOT_FOUND";
+	return "FILE_NOT_FOUND: " + fileName;
 }
 #undef checkFile
 
+std::string UIParser::getFileName(std::string filePath) {
+	int start = filePath.find_last_of('/')+1;
+	int end = filePath.find_last_of('.');
+	
+	return filePath.substr(start, end-start);
+}
 
 //YAML Object Conversions
 namespace YAML {

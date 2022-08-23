@@ -17,6 +17,8 @@ class Renderer {
 		
 		static void drawElementRect(UIElement element);
 		
+		static void drawList(UIElement element);
+		
 		
 		static void setRenderer(SDL_Renderer* renderer);
 		

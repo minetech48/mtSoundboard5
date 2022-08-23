@@ -5,6 +5,7 @@
 #include <thread>
 #include <SDL.h>
 #include <SDL_image.h> 
+#include <fstream>
 
 #include "../math.cpp"
 #include "uiParser.cpp"
@@ -21,6 +22,7 @@ class GUI : public EngineSystem {
 
 void loadGUI(std::string filePath);
 void setTheme(std::string filePath);
+void loadList(std::string listName);
 void resetGUI();
 
 void clickElement(UIElement* element);

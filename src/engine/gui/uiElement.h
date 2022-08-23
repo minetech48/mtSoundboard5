@@ -13,8 +13,10 @@ struct UIElement {
 	std::unordered_map<std::string, YAML::Node> metadata;
 	std::unordered_map<std::string, UIElement> elements;
 	
-	bool focused = false;
+	int focused = 0; //0 or 1 for most elements, 0-integer limit for lists
 	bool active = false;
+	
+	int scroll = 0;
 	
 	//metadata examples
 	//onClick
@@ -38,6 +40,7 @@ struct UIElement {
 	
 	bool containsData(std::string key) {return metadata.find(key) != metadata.end();}
 	std::string getDataString(std::string key) {return metadata[key].as<std::string>();}
+	int getDataInteger(std::string key) {return metadata[key].as<int>();}
 	
 	//element type checks
 	bool isContainer() {return !elements.empty();}

@@ -19,8 +19,10 @@ void Renderer::renderElement(UIElement element) {
 	// );
 	
 	//rendering element/container
-	if (!element.isContainer() || element.isList())
+	if (!element.isContainer())
 		drawElementRect(element);
+	else if (element.isList())
+		drawList(element);
 	
 	//drawing element text
 	if (element.containsData("text")) {
@@ -45,7 +47,7 @@ void Renderer::renderElement(UIElement element) {
 	}
 	
 	//rendering children (recursive)
-	if (!element.elements.empty()) {
+	if (element.isContainer() && !element.isList()) {
 		for (auto const& child : element.elements) {
 			renderElement(child.second);
 		}
@@ -73,8 +75,7 @@ void Renderer::drawElementRect(UIElement element) {
 	}
 	
 	setColor("Border");
-	if (borderColor != "")
-		setColor(borderColor);
+	setColor(borderColor);
 	
 	SDL_RenderFillRect(sdl_renderer, &rect);
 	
@@ -84,10 +85,62 @@ void Renderer::drawElementRect(UIElement element) {
 	rect.h-= borderSize*2;
 	
 	setColor("Primary");
-	if (backgroundColor != "")
-		setColor(backgroundColor);
+	setColor(backgroundColor);
+	
 	SDL_RenderFillRect(sdl_renderer, &rect);
 }
+
+void Renderer::drawList(UIElement element) {
+	if (!element.isList()) return;
+	
+	drawElementRect(element);
+	
+	SDL_Rect* clipRect = new SDL_Rect{
+		element.position.x,
+		element.position.y + borderSize,
+		element.position2.x - element.position.x,
+		element.position2.y - element.position.y - borderSize*2
+	};
+	SDL_RenderSetClipRect(sdl_renderer, clipRect);
+	delete clipRect;
+	
+	
+	UIElement listElement = element.elements["ListElement"];
+	int elementHeight = element.getDataInteger("elementHeight");
+	
+	listElement.position = element.position;
+		listElement.position.x+= borderSize;
+		listElement.position.y+= borderSize - (element.scroll % elementHeight);
+		
+	listElement.position2.x = element.position2.x;
+	listElement.position2.y = listElement.position.y + elementHeight;
+		listElement.position2.x-= borderSize;
+		listElement.position2.y-= borderSize;
+	
+	
+	//renderElement(listElement);
+	std::vector<std::string>* list = GUIData::getList(element.getDataString("listName"));
+	if (list == NULL) return;
+	
+	int startCount = std::max(element.scroll/elementHeight-1, 0);
+	int endCount = std::min(
+		(element.position2.y - element.position.y) / elementHeight + startCount + 2,
+		(int) list->size()
+	);
+	
+	for (int i = startCount; i < endCount; i++) {
+		//listElement.metadata["text"] = (*list)[i];
+		
+		renderElement(listElement);
+		
+		listElement.position.y+= elementHeight;
+		listElement.position2.y+= elementHeight;
+	}
+	
+	
+	SDL_RenderSetClipRect(sdl_renderer, NULL);
+}
+
 
 void Renderer::renderTextRaw(char* text, int x, int y, int centerWidth, int centerHeight) {
 	//printf("text: %s\n", text.c_str());
@@ -110,9 +163,13 @@ void Renderer::renderTextRaw(char* text, int x, int y, int centerWidth, int cent
 	if (centerHeight)
 		drawRect.y+= (centerHeight-drawRect.h)/2;
 	
+	SDL_Texture* textTexture = SDL_CreateTextureFromSurface(sdl_renderer, textSurface);
 	SDL_RenderCopy(sdl_renderer,
-		SDL_CreateTextureFromSurface(sdl_renderer, textSurface),
+		textTexture,
 		NULL, &drawRect);
+	
+	SDL_DestroyTexture(textTexture);
+	SDL_FreeSurface(textSurface);
 }
 
 //high(er) level draw functions
@@ -149,7 +206,6 @@ void Renderer::renderText(std::string text, int x, int y, int centerWidth, int c
 	finishString();
 }
 #undef finishString
-
 
 //setters
 //renderer

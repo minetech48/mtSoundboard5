@@ -98,3 +98,10 @@ std::string GUIData::convertString(const char* str) {
 	
 	return toReturn;
 }
+
+void GUIData::addList(std::string key, std::vector<std::string> list) {
+	lists.insert({key, list});
+}
+std::vector<std::string>* GUIData::getList(std::string key) {
+	return &lists[key];
+}

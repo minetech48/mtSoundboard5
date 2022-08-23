@@ -14,6 +14,9 @@ class GUIData {
 		static void addString(std::string key, std::string value);
 		static std::string getString(std::string key);
 		
+		static void addList(std::string key, std::vector<std::string> list);
+		static std::vector<std::string>* getList(std::string key);
+		
 		static std::string convertString(const char* str);
 		static std::string convertString(std::string str) {return convertString(str.c_str());}
 };
