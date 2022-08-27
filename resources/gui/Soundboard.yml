@@ -18,10 +18,8 @@ elements:
             #listName: boardsList
             listName: testList
             
-            elements:
-              ListElement:
-                text: "test: |ELEMENT| test2"
-                onClick: event|ELEMENT|lol
+            text: "test: |ELEMENT| test2"
+            onClick: event|ELEMENT|lol
             
       SoundsContainer:
         position: [1, 0]
@@ -30,6 +28,8 @@ elements:
           BoardsList:
             position: [90, 10]
             size: [-10, -40]
+            
+            elementHeight: 20
             
             #TODO: add list definition
             listName: soundsList

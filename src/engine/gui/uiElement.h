@@ -1,9 +1,16 @@
 #ifndef UIELEMENT_H
 #define UIELEMENT_H
 
+#include "guiData.h"
 #include "vec2i.h"
 #include <yaml-cpp/yaml.h>
 #include <unordered_map>
+
+/*
+	List todo:
+	exclusive static selection
+	auto load list file
+*/
 
 struct UIElement {
 	vec2i position, defPosition;
@@ -13,7 +20,7 @@ struct UIElement {
 	std::unordered_map<std::string, YAML::Node> metadata;
 	std::unordered_map<std::string, UIElement> elements;
 	
-	int focused = 0; //0 or 1 for most elements, 0-integer limit for lists
+	bool focused = false;
 	bool active = false;
 	
 	int scroll = 0;
@@ -39,12 +46,23 @@ struct UIElement {
 	vec2i getSize() {return {getSizeX(), getSizeY()};}
 	
 	bool containsData(std::string key) {return metadata.find(key) != metadata.end();}
-	std::string getDataString(std::string key) {return metadata[key].as<std::string>();}
-	int getDataInteger(std::string key) {return metadata[key].as<int>();}
+	std::string getDataString(std::string key) {return containsData(key) ? 
+		metadata[key].as<std::string>() : "";}
+	int getDataInteger(std::string key) {return containsData(key) ? 
+		metadata[key].as<int>() : 1;}
 	
 	//element type checks
 	bool isContainer() {return !elements.empty();}
 	bool isGridContainer() {return containsData("gridSize");}
+	
+	int getListElementHeight() {return getDataInteger("elementHeight");}
+	int getListElementWidth() {return (position2.x-position.x) / getDataInteger("listWidth");}
+	int getListSelected() {
+		return focused ?
+			(((GUIData::mouseY-GUIData::borderSize-position.y + scroll) 
+			/ getListElementHeight()) * getDataInteger("listWidth")) +
+			((GUIData::mouseX-GUIData::borderSize-position.x) / getListElementWidth()): -1;
+	}
 	
 	bool isFocusable() {return !isContainer() || isList();}
 	
@@ -54,6 +72,9 @@ struct UIElement {
 	
 	
 	static void alignElement(UIElement* parentPtr, UIElement* elementPtr);
+	
+	void click();
+	void unclick();
 };
 
 #endif

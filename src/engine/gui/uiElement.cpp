@@ -1,5 +1,7 @@
 #include "uiElement.h"
 
+#include <regex>
+
 void UIElement::alignElement(UIElement* parentPtr, UIElement* elementPtr) {
 	//make containers fill parent if dimensions undefined
 	if (elementPtr->defSize.x == 0) {
@@ -73,4 +75,32 @@ void UIElement::alignElement(UIElement* parentPtr, UIElement* elementPtr) {
 	// 	elementPtr->position2.x,
 	// 	elementPtr->position2.y
 	// );
+}
+
+void UIElement::click() {
+	if (!isButton()) return;
+	
+	std::string action = getDataString("onClick");
+	
+	if (isList()) {
+		std::vector<std::string>* list = GUIData::getList(getDataString("listName"));
+		
+		if (list != NULL)
+			action = std::regex_replace(action, std::regex("\\|ELEMENT\\|"),
+				(*list)[getListSelected()]);
+	}
+	
+	if (isSwitch() && active) {
+		EngineCore::broadcast(action+"R");
+		active = false;
+	}else{
+		EngineCore::broadcast(action);
+		active = true;
+	}
+}
+void UIElement::unclick() {
+	if (!isButton()) return;
+	
+	if (!isSwitch())
+		active = false;
 }

@@ -7,6 +7,9 @@ static std::unordered_map<std::string, std::vector<std::string>> lists;
 
 static YAML::Node strings;
 
+
+int GUIData::mouseX = 0, GUIData::mouseY = 0;
+
 //getter functions
 
 //color handling

@@ -15,7 +15,7 @@ UIElement* clickedElement;
 
 std::map<std::string, UIElement> menus;
 	
-static int mouseX, mouseY;
+//static int mouseX, mouseY;
 
 void GUI::initialize() {
 	printf("--System GUI Initializing\n");
@@ -43,12 +43,13 @@ void GUI::update() {
 	//Update the surface
 	// SDL_UpdateWindowSurface(window);
 	
-	SDL_GetMouseState(&mouseX, &mouseY);
+	SDL_GetMouseState(&GUIData::mouseX, &GUIData::mouseY);
 	
 	//printf("Mouse position: (%d, %d)\n", mouseX, mouseY);
 	
 	for (auto const& menu : menus) {
 		UIElement* hovered = getHoveredElement(&menus[menu.first]);
+		
 		if (hovered != focusedElement) {
 			if (focusedElement != NULL)
 				focusedElement->focused = false;
@@ -72,7 +73,7 @@ void GUI::update() {
 
 UIElement* getHoveredElement(UIElement* element) {
 	UIElement* toReturn = element;
-	if (!isInBounds(*element, mouseX, mouseY)) return NULL;
+	if (!isInBounds(*element, GUIData::mouseX, GUIData::mouseY)) return NULL;
 	
 	
 	if (element->isContainer()) {
@@ -171,29 +172,6 @@ void resetGUI() {
 	EngineCore::broadcast("GUISetTheme", "gui/theming/DefaultTheme");
 }
 
-
-void clickElement(UIElement* element) {
-	if (element == NULL || !element->isButton()) return;
-	
-	if (element->isSwitch() && element->active) {
-		EngineCore::broadcast(element->getDataString("onClick")+"R");
-		element->active = false;
-	}else{
-		EngineCore::broadcast(element->getDataString("onClick"));
-		element->active = true;
-	}
-	
-	clickedElement = element;
-}
-void unclickElement() {
-	if (clickedElement == NULL || !clickedElement->isButton()) return;
-	
-	if (!clickedElement->isSwitch())
-		clickedElement->active = false;
-	
-	clickedElement = NULL;
-}
-
 //window (input) handling
 void windowLoop() {
 	SDL_Event event;
@@ -205,11 +183,15 @@ void windowLoop() {
 				break;
 				
 			case SDL_MOUSEBUTTONDOWN:
-				clickElement(focusedElement);
+				if (focusedElement == NULL) break;
+				focusedElement->click();
+				clickedElement = focusedElement;
 				break;
 				
 			case SDL_MOUSEBUTTONUP:
-				unclickElement();
+				if (clickedElement == NULL) break;
+				clickedElement->unclick();
+				clickedElement = NULL;
 				break;
 			
 			case SDL_MOUSEWHEEL:

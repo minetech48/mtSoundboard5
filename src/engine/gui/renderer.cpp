@@ -7,7 +7,6 @@ static TTF_Font* defaultFont = NULL;
 
 static SDL_Color currentColor;
 
-const int borderSize = 2;
 
 void Renderer::renderElement(UIElement element) {
 	// printf("Renderer: %s: %d:%d:%d:%d\n",
@@ -19,10 +18,12 @@ void Renderer::renderElement(UIElement element) {
 	// );
 	
 	//rendering element/container
+	if (element.isList()) {
+		drawList(element);
+		return;
+	}
 	if (!element.isContainer())
 		drawElementRect(element);
-	else if (element.isList())
-		drawList(element);
 	
 	//drawing element text
 	if (element.containsData("text")) {
@@ -65,7 +66,7 @@ void Renderer::drawElementRect(UIElement element) {
 	std::string borderColor;
 	std::string backgroundColor;
 	
-	if (element.active) {
+	if (element.active && !element.isList()) {
 		borderColor = "ActiveBorder";
 		backgroundColor = "Active";
 	}
@@ -79,10 +80,10 @@ void Renderer::drawElementRect(UIElement element) {
 	
 	SDL_RenderFillRect(sdl_renderer, &rect);
 	
-	rect.x+= borderSize;
-	rect.y+= borderSize;
-	rect.w-= borderSize*2;
-	rect.h-= borderSize*2;
+	rect.x+= GUIData::borderSize;
+	rect.y+= GUIData::borderSize;
+	rect.w-= GUIData::borderSize*2;
+	rect.h-= GUIData::borderSize*2;
 	
 	setColor("Primary");
 	setColor(backgroundColor);
@@ -97,44 +98,65 @@ void Renderer::drawList(UIElement element) {
 	
 	SDL_Rect* clipRect = new SDL_Rect{
 		element.position.x,
-		element.position.y + borderSize,
+		element.position.y + GUIData::borderSize,
 		element.position2.x - element.position.x,
-		element.position2.y - element.position.y - borderSize*2
+		element.position2.y - element.position.y - GUIData::borderSize*2
 	};
 	SDL_RenderSetClipRect(sdl_renderer, clipRect);
 	delete clipRect;
 	
 	
-	UIElement listElement = element.elements["ListElement"];
-	int elementHeight = element.getDataInteger("elementHeight");
+	UIElement listElement;// = element.elements["ListElement"];
+	int elementHeight = element.getListElementHeight();
+	int elementWidth = element.getListElementWidth();
+	int listWidth = element.getDataInteger("listWidth");
 	
-	listElement.position = element.position;
-		listElement.position.x+= borderSize;
-		listElement.position.y+= borderSize - (element.scroll % elementHeight);
+	//listElement.position = element.position;
+	int startX = element.position.x + GUIData::borderSize;
+	int startY = element.position.y + GUIData::borderSize - element.scroll;
 		
-	listElement.position2.x = element.position2.x;
-	listElement.position2.y = listElement.position.y + elementHeight;
-		listElement.position2.x-= borderSize;
-		listElement.position2.y-= borderSize;
+	// listElement.position2.x = listElement.position.x + elementWidth;
+	// listElement.position2.y = listElement.position.y + elementHeight;
+	// 	//listElement.position2.x-= GUIData::borderSize;
+	// 	listElement.position2.y-= GUIData::borderSize;
 	
 	
 	//renderElement(listElement);
 	std::vector<std::string>* list = GUIData::getList(element.getDataString("listName"));
 	if (list == NULL) return;
 	
-	int startCount = std::max(element.scroll/elementHeight-1, 0);
+	int startCount = std::max(element.scroll/(elementHeight/listWidth)-listWidth, 0);
 	int endCount = std::min(
-		(element.position2.y - element.position.y) / elementHeight + startCount + 2,
+		(element.position2.y - element.position.y) / (elementHeight/listWidth)
+		 + startCount + elementWidth*2,
 		(int) list->size()
 	);
 	
+	int selectedElement = element.getListSelected();
+	
+	int posI = -1 + startCount % listWidth;
 	for (int i = startCount; i < endCount; i++) {
-		//listElement.metadata["text"] = (*list)[i];
+		posI++;
+		listElement.metadata["text"] = (*list)[i];
+		
+		listElement.position.x = startX + elementWidth * (i % listWidth);
+		listElement.position2.x = listElement.position.x + elementWidth;
+		
+		listElement.position.y = startY + (elementHeight * (i / listWidth));
+		listElement.position2.y = listElement.position.y + elementHeight;
+		
+		
+		if (selectedElement == i) {
+			listElement.focused = true;
+			if (element.active)
+				listElement.active = true;
+		}
 		
 		renderElement(listElement);
 		
-		listElement.position.y+= elementHeight;
-		listElement.position2.y+= elementHeight;
+		listElement.focused = false;
+		listElement.active = false;
+		
 	}
 	
 	
@@ -177,10 +199,10 @@ void Renderer::renderTextRaw(char* text, int x, int y, int centerWidth, int cent
 #define finishString() \
 			drawStr[drawIndex] = '\0';\
 			renderTextRaw(drawStr,\
-			x			+borderSize+1,\
-			printY		+borderSize-1,\
-			centerWidth	- (centerWidth ? (borderSize+1)*2 : 0),\
-			centerHeight- (centerHeight? (borderSize-1)*2 : 0));
+			x			+GUIData::borderSize+1,\
+			printY		+GUIData::borderSize-1,\
+			centerWidth	- (centerWidth ? (GUIData::borderSize+1)*2 : 0),\
+			centerHeight- (centerHeight? (GUIData::borderSize-1)*2 : 0));
 			
 void Renderer::renderText(std::string text, int x, int y, int centerWidth, int centerHeight) {
 	text = GUIData::convertString(text);

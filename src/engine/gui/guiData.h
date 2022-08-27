@@ -1,6 +1,13 @@
 #pragma once
 
+#include <SDL_ttf.h>
+#include <yaml-cpp/yaml.h>
+
 class GUIData {
+	public:
+		static int mouseX, mouseY;
+		static const int borderSize = 2;
+		
 	public:
 		static void addColor(std::string colorName, SDL_Color color);
 		static SDL_Color getColor(std::string colorName);
