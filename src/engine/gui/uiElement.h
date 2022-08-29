@@ -6,12 +6,6 @@
 #include <yaml-cpp/yaml.h>
 #include <unordered_map>
 
-/*
-	List todo:
-	exclusive static selection
-	auto load list file
-*/
-
 struct UIElement {
 	vec2i position, defPosition;
 	vec2i position2, defSize;
@@ -24,6 +18,7 @@ struct UIElement {
 	bool active = false;
 	
 	int scroll = 0;
+	int listActive = -1;
 	
 	//metadata examples
 	//onClick

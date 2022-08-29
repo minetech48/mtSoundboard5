@@ -20,7 +20,7 @@ struct EngineEvent {
 		toReturn+= "[Event: " + event;
 		
 		if (arg1.length() > 0) {
-			toReturn+= "\\\\" + arg1;
+			toReturn+= ", " + arg1;
 		}
 		
 		toReturn+= "]";

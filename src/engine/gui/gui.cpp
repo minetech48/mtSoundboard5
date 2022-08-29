@@ -47,18 +47,20 @@ void GUI::update() {
 	
 	//printf("Mouse position: (%d, %d)\n", mouseX, mouseY);
 	
-	for (auto const& menu : menus) {
-		UIElement* hovered = getHoveredElement(&menus[menu.first]);
-		
-		if (hovered != focusedElement) {
-			if (focusedElement != NULL)
-				focusedElement->focused = false;
+	if (clickedElement == NULL) {
+		for (auto const& menu : menus) {
+			UIElement* hovered = getHoveredElement(&menus[menu.first]);
 			
-			focusedElement = hovered;
-			
-			if (focusedElement != NULL)
-				focusedElement->focused = true;
-			break;
+			if (hovered != focusedElement) {
+				if (focusedElement != NULL)
+					focusedElement->focused = false;
+				
+				focusedElement = hovered;
+				
+				if (focusedElement != NULL)
+					focusedElement->focused = true;
+				break;
+			}
 		}
 	}
 	

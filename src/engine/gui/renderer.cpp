@@ -146,11 +146,11 @@ void Renderer::drawList(UIElement element) {
 		listElement.position2.y = listElement.position.y + elementHeight;
 		
 		
-		if (selectedElement == i) {
+		if (selectedElement == i)
 			listElement.focused = true;
-			if (element.active)
-				listElement.active = true;
-		}
+			
+		if (element.listActive == i)
+			listElement.active = true;
 		
 		renderElement(listElement);
 		

@@ -4,6 +4,14 @@
 #include <engine/engineCore.cpp>
 #include <engine/gui/gui.cpp>
 
+/*
+	Todo:
+		GUI Lists: auto load list file
+		GUI: init script (lua?)
+		GUI: system fonts
+*/
+
+
 int main(int argc, char* args[]) {
 	EngineEvent engineEvent("testEvent");
 	

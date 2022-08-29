@@ -85,9 +85,12 @@ void UIElement::click() {
 	if (isList()) {
 		std::vector<std::string>* list = GUIData::getList(getDataString("listName"));
 		
-		if (list != NULL)
+		if (list != NULL) {
 			action = std::regex_replace(action, std::regex("\\|ELEMENT\\|"),
 				(*list)[getListSelected()]);
+			
+			listActive = getListSelected();
+		}
 	}
 	
 	if (isSwitch() && active) {
@@ -103,4 +106,7 @@ void UIElement::unclick() {
 	
 	if (!isSwitch())
 		active = false;
+		
+	if (isList() && getDataString("listMode") == "single")
+		listActive = -1;
 }
