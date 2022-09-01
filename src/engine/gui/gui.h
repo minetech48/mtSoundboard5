@@ -25,9 +25,6 @@ void setTheme(std::string filePath);
 void loadList(std::string listName);
 void resetGUI();
 
-void clickElement(UIElement* element);
-void unclickElement();
-
 UIElement* getHoveredElement(UIElement* element);
 bool isInBounds(UIElement element, int x, int y);
 

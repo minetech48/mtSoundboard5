@@ -77,10 +77,20 @@ void UIElement::alignElement(UIElement* parentPtr, UIElement* elementPtr) {
 	// );
 }
 
+std::chrono::steady_clock::time_point lastClick;
 void UIElement::click() {
 	if (!isButton()) return;
 	
-	std::string action = getDataString("onClick");
+	//testing for double click
+	bool doubleClick = false;
+	std::string action;
+	if (lastClick + std::chrono::milliseconds(200) > std::chrono::steady_clock::now() 
+			&& containsData("onDoubleClick")) {
+		doubleClick = true;
+		action = getDataString("onDoubleClick");
+	}else{
+		action = getDataString("onClick");
+	}
 	
 	if (isList()) {
 		std::vector<std::string>* list = GUIData::getList(getDataString("listName"));
@@ -100,6 +110,8 @@ void UIElement::click() {
 		EngineCore::broadcast(action);
 		active = true;
 	}
+	
+	lastClick = std::chrono::steady_clock::now();
 }
 void UIElement::unclick() {
 	if (!isButton()) return;
