@@ -31,7 +31,7 @@ void GUI::initialize() {
 	rootElement.position2 = {windowWidth, windowHeight};
 	rootElement.name = "root";
 	
-	std::thread(windowLoop).detach();
+	//std::thread(windowLoop).detach();
 	
 	loadList("lists/testList");
 	
@@ -39,6 +39,7 @@ void GUI::initialize() {
 }
 
 void GUI::update() {
+	windowLoop();
 	
 	//Update the surface
 	// SDL_UpdateWindowSurface(window);
@@ -177,7 +178,7 @@ void resetGUI() {
 //window (input) handling
 void windowLoop() {
 	SDL_Event event;
-	while (EngineCore::running) {
+	//while (EngineCore::running) {
 		while (SDL_PollEvent(&event) != 0) {
 			switch (event.type) {
 			case SDL_QUIT:
@@ -207,7 +208,7 @@ void windowLoop() {
 				break;
 			}
 		}
-	}
+	//}
 }
 
 bool initSDL() {

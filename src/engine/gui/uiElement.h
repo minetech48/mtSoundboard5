@@ -61,7 +61,7 @@ struct UIElement {
 	
 	bool isFocusable() {return !isContainer() || isList();}
 	
-	bool isButton() {return containsData("onClick");}
+	bool isButton() {return containsData("onClick") || containsData("onDoubleClick");}
 	bool isSwitch() {return containsData("toggle");}
 	bool isList() {return containsData("listName");}
 	

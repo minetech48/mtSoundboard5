@@ -17,8 +17,7 @@ class GUIData {
 		static TTF_Font* getFont(std::string fontName);
 		
 		
-		static void setStrings(YAML::Node stringsList);
-		static void addString(std::string key, std::string value);
+		static void setString(std::string key, std::string value);
 		static std::string getString(std::string key);
 		
 		static void addList(std::string key, std::vector<std::string> list);

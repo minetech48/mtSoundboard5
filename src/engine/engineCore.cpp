@@ -16,6 +16,8 @@ void EngineCore::broadcast(std::string eventTitle, std::string eventArg1) {
 	broadcast(EngineEvent(eventTitle, eventArg1));
 }
 void EngineCore::broadcast(std::string eventTitle) {
+	if (eventTitle == "") return;
+	
 	broadcast(EngineEvent(eventTitle));
 }
 

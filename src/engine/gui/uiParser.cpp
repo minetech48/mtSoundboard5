@@ -62,7 +62,10 @@ void UIParser::loadTheme(YAML::Node root) {
 							root["Colors"][i->second.as<std::string>()].as<SDL_Color>());
 	}
 	
-	GUIData::setStrings(YAML::LoadFile(findFile(root["Language"].as<std::string>(), ".yml")));
+	YAML::Node langRoot = YAML::LoadFile(findFile(root["Language"].as<std::string>(), ".yml"));
+	for (YAML::const_iterator i = langRoot.begin(); i != langRoot.end(); i++) {
+		GUIData::setString(i->first.as<std::string>(), i->second.as<std::string>());
+	}
 	
 	Renderer::updateDefaultFont();
 }

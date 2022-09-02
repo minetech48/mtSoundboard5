@@ -79,8 +79,6 @@ void UIElement::alignElement(UIElement* parentPtr, UIElement* elementPtr) {
 
 std::chrono::steady_clock::time_point lastClick;
 void UIElement::click() {
-	if (!isButton()) return;
-	
 	//testing for double click
 	bool doubleClick = false;
 	std::string action;

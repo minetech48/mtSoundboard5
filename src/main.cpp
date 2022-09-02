@@ -3,6 +3,7 @@
 
 #include <engine/engineCore.cpp>
 #include <engine/gui/gui.cpp>
+#include <soudboard/soundboard.h>
 
 /*
 	Todo:
@@ -20,9 +21,10 @@ int main(int argc, char* args[]) {
 	// sysObj = &guiObj;
 	
 	GUI guiObj;
-	EngineSystem* sysObj = &guiObj;
+	Soundboard sbObj;
 	
 	EngineCore::initSystem(&guiObj);
+	EngineCore::initSystem(&sbObj);
 	
 	EngineCore::broadcast(engineEvent);
 	

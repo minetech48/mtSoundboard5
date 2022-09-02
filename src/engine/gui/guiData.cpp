@@ -5,7 +5,7 @@ static std::unordered_map<std::string, SDL_Color> colors;
 static std::unordered_map<std::string, TTF_Font*> fonts;
 static std::unordered_map<std::string, std::vector<std::string>> lists;
 
-static YAML::Node strings;
+static std::unordered_map<std::string, std::string> strings;
 
 
 int GUIData::mouseX = 0, GUIData::mouseY = 0;
@@ -39,13 +39,13 @@ TTF_Font* GUIData::getFont(std::string fontName) {
 
 
 //string handling
-void GUIData::setStrings(YAML::Node stringsList) {
-	strings = stringsList;
+void GUIData::setString(std::string key, std::string value) {
+	strings[key] = value;
 }
 
 std::string GUIData::getString(std::string key) {
-	if (strings[key].IsDefined())
-		return strings[key].as<std::string>();
+	if (strings.find(key) != strings.end())
+		return strings[key];
 	
 	return key;
 }
@@ -53,7 +53,7 @@ std::string GUIData::getString(std::string key) {
 std::string GUIData::convertString(const char* str) {
 	std::string toReturn;
 	
-	if (strings[str].IsDefined()) {
+	if (strings.find(str) != strings.end()) {
 		return getString(str);
 	}
 	
