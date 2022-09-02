@@ -35,9 +35,11 @@ elements:
             elementHeight: 20
             
             #TODO: add list definition
-            listName: soundsList
+            #listName: soundsList
+            listName: testList
+            listWidth: 2
             
-            onDoubleClick: SBPlaySound\\|ELEMENT|
+            onDoubleClick: "SBPlaySound(|ELEMENT|)"
   
   ButtonsContainer:
     elements:

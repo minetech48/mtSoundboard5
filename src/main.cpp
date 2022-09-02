@@ -3,7 +3,7 @@
 
 #include <engine/engineCore.cpp>
 #include <engine/gui/gui.cpp>
-#include <soudboard/soundboard.h>
+#include <soudboard/soundboard.cpp>
 
 /*
 	Todo:

@@ -1,3 +1,5 @@
+#pragma once
+
 struct StringReader {
 	StringReader(std::string strIn) {str = strIn.c_str();}
 	StringReader(const char* strIn) : str(strIn) {}
@@ -13,8 +15,9 @@ struct StringReader {
 	char next() 	{++index; return current();}
 	char previous()	{--index; return current();}
 	
+	//Todo: use substring instead of constand appending for performance?
 	std::string advanceTo(char c) {
-		std::string toReturn;
+		std::string toReturn = "";
 		
 		while (hasNext() && next() != c) {
 			toReturn+= current();

@@ -3,6 +3,8 @@
 #include <queue>
 #include <thread>
 
+#include "util/stringReader.h"
+
 std::vector<EngineSystem*> systems;
 std::queue<EngineEvent> eventQueue;
 
@@ -18,7 +20,11 @@ void EngineCore::broadcast(std::string eventTitle, std::string eventArg1) {
 void EngineCore::broadcast(std::string eventTitle) {
 	if (eventTitle == "") return;
 	
-	broadcast(EngineEvent(eventTitle));
+	StringReader reader(eventTitle.c_str());
+	std::string event = reader.advanceTo('(');
+	std::string arg1 = reader.advanceTo(')');
+	
+	broadcast(event, arg1);
 }
 
 //initializing systems
