@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 struct StringReader {
 	StringReader(std::string strIn) {str = strIn.c_str();}
 	StringReader(const char* strIn) : str(strIn) {}

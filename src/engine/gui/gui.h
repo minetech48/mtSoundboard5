@@ -1,17 +1,21 @@
 #ifndef GUI_H
 #define GUI_H
 
+#include "guiData.h"
+
 #include <stdio.h>
 #include <thread>
 #include <SDL.h>
 #include <SDL_image.h> 
 #include <fstream>
 
-#include "../math.cpp"
-#include "uiParser.cpp"
-#include "uiElement.cpp"
+#include "../math.h"
+#include "uiParser.h"
+#include "uiElement.h"
 #include "../engineSystem.h"
-#include "renderer.cpp"
+#include "renderer.h"
+#include "../engineEvent.h"
+#include "../engineCore.h"
 
 class GUI : public EngineSystem {
 	public:

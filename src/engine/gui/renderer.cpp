@@ -240,10 +240,10 @@ void Renderer::setRenderer(SDL_Renderer* renderer) {
 
 //fonts
 bool Renderer::setFont(std::string fontName) {
-	if (fonts.find(fontName) == fonts.end())
+	if (GUIData::fonts.find(fontName) == GUIData::fonts.end())
 		return false;
 	
-	currentFont = fonts[fontName];
+	currentFont = GUIData::fonts[fontName];
 	return true;
 }
 void Renderer::updateDefaultFont() {
@@ -253,10 +253,10 @@ void Renderer::updateDefaultFont() {
 
 //colors
 bool Renderer::setColor(std::string colorName) {
-	if (colors.find(colorName) == colors.end())
+	if (GUIData::colors.find(colorName) == GUIData::colors.end())
 		return false;
 	
-	currentColor = colors[colorName];
+	currentColor = GUIData::colors[colorName];
 	
 	if (sdl_renderer != NULL)
 		SDL_SetRenderDrawColor(sdl_renderer,
@@ -268,7 +268,7 @@ bool Renderer::setColor(std::string colorName) {
 	return true;
 }
 void Renderer::clearColors() {
-	colors.clear();
+	GUIData::colors.clear();
 }
 
 //rendering actions

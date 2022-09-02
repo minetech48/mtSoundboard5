@@ -2,11 +2,18 @@
 
 #include <SDL_ttf.h>
 #include <yaml-cpp/yaml.h>
+#include <unordered_map>
 
 class GUIData {
 	public:
 		static int mouseX, mouseY;
 		static const int borderSize = 2;
+		
+		static std::unordered_map<std::string, SDL_Color> colors;
+		static std::unordered_map<std::string, TTF_Font*> fonts;
+		static std::unordered_map<std::string, std::vector<std::string>> lists;
+
+		static std::unordered_map<std::string, std::string> strings;
 		
 	public:
 		static void addColor(std::string colorName, SDL_Color color);

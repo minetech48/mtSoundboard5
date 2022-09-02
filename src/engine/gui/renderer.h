@@ -5,7 +5,7 @@
 #include <SDL2/SDL.h>
 #include <SDL_ttf.h>
 
-#include "guiData.cpp"
+#include "guiData.h"
 
 class Renderer {
 	public:

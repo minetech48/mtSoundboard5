@@ -1,9 +1,9 @@
 #include "main.h"
 #include <stdio.h>
 
-#include <engine/engineCore.cpp>
-#include <engine/gui/gui.cpp>
-#include <soudboard/soundboard.cpp>
+#include <engine/engineCore.h>
+#include <engine/gui/gui.h>
+#include <soudboard/soundboard.h>
 
 /*
 	Todo:
@@ -19,7 +19,6 @@ int main(int argc, char* args[]) {
 	// EngineSystem* sysObj;
 	// GUI guiObj;
 	// sysObj = &guiObj;
-	
 	GUI guiObj;
 	Soundboard sbObj;
 	
@@ -31,7 +30,6 @@ int main(int argc, char* args[]) {
 	EngineCore::broadcast("GUISetTheme", "gui/theming/DefaultTheme");
 	EngineCore::broadcast("GUILoadList", "lists/testList");
 	EngineCore::broadcast("GUIShow", "gui/Soundboard");
-	
 	
 	EngineCore::start();
 	

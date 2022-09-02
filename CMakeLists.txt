@@ -22,17 +22,20 @@ include_directories(
 	${PROJECT_SOURCE_DIR}/include
 	${PROJECT_SOURCE_DIR}/src
 )
+link_directories(
+	${PROJECT_SOURCE_DIR}/src
+)
 
-file(GLOB main_sources
-	"${PROJECT_SOURCE_DIR}/headers/*.h"
-	"${PROJECT_SOURCE_DIR}/headers/*.hpp"
-	"${PROJECT_SOURCE_DIR}/src/*.c"
-	"${PROJECT_SOURCE_DIR}/src/*.cpp"
+file(GLOB_RECURSE main_sources
+	${PROJECT_SOURCE_DIR}/src/*.h
+	${PROJECT_SOURCE_DIR}/src/*.hpp
+	${PROJECT_SOURCE_DIR}/src/*.c
+	${PROJECT_SOURCE_DIR}/src/*.cpp
 )
 
 add_executable(${PROJECT_NAME} ${main_sources})
 
-target_link_libraries(${PROJECT_NAME} 
+target_link_libraries(${PROJECT_NAME}
 	SDL2::SDL2 
 	SDL2::SDL2main
 	SDL2::SDL2-static

@@ -1,6 +1,9 @@
 #include "uiElement.h"
 
 #include <regex>
+#include <chrono>
+
+#include "../engineCore.h"
 
 void UIElement::alignElement(UIElement* parentPtr, UIElement* elementPtr) {
 	//make containers fill parent if dimensions undefined

@@ -41,7 +41,7 @@ void UIParser::loadTheme(YAML::Node root) {
 	for (YAML::const_iterator i = root["Fonts"].begin(); i != root["Fonts"].end(); i++) {
 		
 		TTF_Font* font = TTF_OpenFont(
-			findFile(i->second["fontName"].as<std::string>(), ".ttf").c_str(),
+			FileIO::findFile(i->second["fontName"].as<std::string>(), ".ttf").c_str(),
 			i->second["fontSize"].as<int>());
 			
 		if (font == NULL) {
@@ -62,7 +62,7 @@ void UIParser::loadTheme(YAML::Node root) {
 							root["Colors"][i->second.as<std::string>()].as<SDL_Color>());
 	}
 	
-	YAML::Node langRoot = YAML::LoadFile(findFile(root["Language"].as<std::string>(), ".yml"));
+	YAML::Node langRoot = YAML::LoadFile(FileIO::findFile(root["Language"].as<std::string>(), ".yml"));
 	for (YAML::const_iterator i = langRoot.begin(); i != langRoot.end(); i++) {
 		GUIData::setString(i->first.as<std::string>(), i->second.as<std::string>());
 	}
@@ -70,42 +70,6 @@ void UIParser::loadTheme(YAML::Node root) {
 	Renderer::updateDefaultFont();
 }
 
-//finding file on system
-#define checkFile(name) if (std::filesystem::exists({name})) return name;
-std::string UIParser::findFile(std::string fileName, std::string extension) {
-	namespace fs = std::filesystem;
-	fileName+= extension;
-	
-	switch (hash(extension)) {
-		case hash(".ttf"):
-			checkFile("resources/fonts/" + fileName);
-			break;
-			
-		case hash(".yml"):
-			checkFile("resources/gui/" + fileName);
-			checkFile("resources/gui/menus/" + fileName);
-			checkFile("resources/gui/lang/" + fileName)
-			break;
-			
-		case hash(".txt"):
-			checkFile("resources/gui/" + fileName);
-			checkFile("resources/gui/lists/" + fileName);
-			break;
-	}
-	
-	checkFile("resources/" + fileName);
-	checkFile(fileName);
-	
-	return "FILE_NOT_FOUND: " + fileName;
-}
-#undef checkFile
-
-std::string UIParser::getFileName(std::string filePath) {
-	int start = filePath.find_last_of('/')+1;
-	int end = filePath.find_last_of('.');
-	
-	return filePath.substr(start, end-start);
-}
 
 //YAML Object Conversions
 namespace YAML {

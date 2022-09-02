@@ -122,13 +122,13 @@ void GUI::handleEvent(EngineEvent event) {
 //events
 //parsing YAML menu file
 void loadGUI(std::string filePath) {
-	YAML::Node ymlRoot = YAML::LoadFile(UIParser::findFile(filePath, ".yml"));
+	YAML::Node ymlRoot = YAML::LoadFile(FileIO::findFile(filePath, ".yml"));
 	
 	// std::string str = yml["elements"]["HelloButton"]["text"].as<std::string>();
 	// printf("%s \n", str.c_str());
 	
 	UIElement menu = UIParser::parseUIElement(ymlRoot);
-	menu.name = UIParser::getFileName(filePath);
+	menu.name = FileIO::getFileName(filePath);
 	//printf("menuname: %s\n", menu.name.c_str());
 	
 	UIElement::alignElement(&rootElement, &menu);
@@ -143,17 +143,17 @@ void setTheme(std::string filePath) {
 	GUIData::clearFonts();
 	Renderer::clearColors();
 	
-	YAML::Node ymlRoot = YAML::LoadFile(UIParser::findFile(filePath, ".yml"));
+	YAML::Node ymlRoot = YAML::LoadFile(FileIO::findFile(filePath, ".yml"));
 	UIParser::loadTheme(ymlRoot);
 }
 
 void loadList(std::string filePath) {
-	std::ifstream file(UIParser::findFile(filePath, ".txt"));
-	std::string listName = UIParser::getFileName(filePath);
+	std::ifstream file(FileIO::findFile(filePath, ".txt"));
+	std::string listName = FileIO::getFileName(filePath);
 	
 	printf("Loading list: \"%s\" from \"%s\"\n", 
 		listName.c_str(), 
-		UIParser::findFile(filePath, ".txt").c_str());
+		FileIO::findFile(filePath, ".txt").c_str());
 	
 	if (file.is_open()) {
 		std::string line;

@@ -1,3 +1,5 @@
+#pragma once
+
 #include "engineEvent.h"
 #include "engineSystem.h"
 

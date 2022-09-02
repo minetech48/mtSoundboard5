@@ -1,5 +1,7 @@
 #include "soundboard.h"
 
+#include "engine/gui/gui.h"
+
 //static std::map<std::string, std::function<void(EngineEvent)>> eventMap;
 
 void Soundboard::initialize() {
@@ -11,10 +13,13 @@ void Soundboard::handleEvent(EngineEvent event) {
 		eventMap[event.event](event);
 }
 
-void Soundboard::update() {
+void Soundboard::update() {}
+
+
+void Soundboard::SBSelectBoard(EngineEvent event) {
 	
 }
 
-static void SBPlaySound(EngineEvent event) {
+void Soundboard::SBPlaySound(EngineEvent event) {
 	printf("playing sound %s\n", event.arg1.c_str());
 }

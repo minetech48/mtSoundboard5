@@ -1,11 +1,13 @@
+#include <unordered_map>
+
 #include "guiData.h"
 #include "../util/stringReader.h"
 
-static std::unordered_map<std::string, SDL_Color> colors;
-static std::unordered_map<std::string, TTF_Font*> fonts;
-static std::unordered_map<std::string, std::vector<std::string>> lists;
+std::unordered_map<std::string, SDL_Color> GUIData::colors;
+std::unordered_map<std::string, TTF_Font*> GUIData::fonts;
+std::unordered_map<std::string, std::vector<std::string>> GUIData::lists;
 
-static std::unordered_map<std::string, std::string> strings;
+std::unordered_map<std::string, std::string> GUIData::strings;
 
 
 int GUIData::mouseX = 0, GUIData::mouseY = 0;
