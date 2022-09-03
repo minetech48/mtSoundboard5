@@ -2,10 +2,10 @@
 
 #include "engine/gui/gui.h"
 
-//static std::map<std::string, std::function<void(EngineEvent)>> eventMap;
-
 void Soundboard::initialize() {
 	eventMap.insert({"SBPlaySound", SBPlaySound});
+	
+	GUI::addSDLEventHandler(SDLEventHandler);
 }
 
 void Soundboard::handleEvent(EngineEvent event) {
@@ -14,6 +14,14 @@ void Soundboard::handleEvent(EngineEvent event) {
 }
 
 void Soundboard::update() {}
+
+void Soundboard::SDLEventHandler(SDL_Event event) {
+	switch (event.type) {
+		case SDL_KEYDOWN:
+			printf("sbeventhandle\n");
+			break;
+	}
+}
 
 
 void Soundboard::SBSelectBoard(EngineEvent event) {

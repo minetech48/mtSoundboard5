@@ -14,7 +14,9 @@ UIElement* focusedElement;
 UIElement* clickedElement;
 
 std::map<std::string, UIElement> menus;
-	
+
+std::vector<std::function<void(SDL_Event)>> GUI::SDLEventHandlers;
+
 //static int mouseX, mouseY;
 
 void GUI::initialize() {
@@ -178,37 +180,43 @@ void resetGUI() {
 //window (input) handling
 void windowLoop() {
 	SDL_Event event;
-	//while (EngineCore::running) {
-		while (SDL_PollEvent(&event) != 0) {
-			switch (event.type) {
-			case SDL_QUIT:
-				EngineCore::running = false;
-				break;
-				
-			case SDL_MOUSEBUTTONDOWN:
-				if (focusedElement == NULL) break;
-				focusedElement->click();
-				clickedElement = focusedElement;
-				break;
-				
-			case SDL_MOUSEBUTTONUP:
-				if (clickedElement == NULL) break;
-				clickedElement->unclick();
-				clickedElement = NULL;
-				break;
+	while (SDL_PollEvent(&event) != 0) {
+		switch (event.type) {
+		case SDL_QUIT:
+			EngineCore::running = false;
+			break;
 			
-			case SDL_MOUSEWHEEL:
-				if (focusedElement == NULL) break;
-				
-				focusedElement->scroll+= -event.wheel.y*11;
-				
-				if (focusedElement->isList() && focusedElement->scroll < 0)
-					focusedElement->scroll = 0;
-				
-				break;
-			}
+		case SDL_MOUSEBUTTONDOWN:
+			if (focusedElement == NULL) break;
+			focusedElement->click();
+			clickedElement = focusedElement;
+			break;
+			
+		case SDL_MOUSEBUTTONUP:
+			if (clickedElement == NULL) break;
+			clickedElement->unclick();
+			clickedElement = NULL;
+			break;
+		
+		case SDL_MOUSEWHEEL:
+			if (focusedElement == NULL) break;
+			
+			focusedElement->scroll+= -event.wheel.y*11;
+			
+			if (focusedElement->isList() && focusedElement->scroll < 0)
+				focusedElement->scroll = 0;
+			
+			break;
 		}
-	//}
+		
+		for (auto funct : GUI::SDLEventHandlers) {
+			funct(event);
+		}
+	}
+}
+
+void GUI::addSDLEventHandler(std::function<void(SDL_Event)> function) {
+	SDLEventHandlers.push_back(function);
 }
 
 bool initSDL() {

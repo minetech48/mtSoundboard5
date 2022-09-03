@@ -8,6 +8,7 @@
 #include <SDL.h>
 #include <SDL_image.h> 
 #include <fstream>
+#include <functional>
 
 #include "../math.h"
 #include "uiParser.h"
@@ -19,9 +20,14 @@
 
 class GUI : public EngineSystem {
 	public:
+		static std::vector<std::function<void(SDL_Event)>> SDLEventHandlers;
+	
+	public:
 		void initialize();
 		void handleEvent(EngineEvent event);
 		void update();
+
+		void static addSDLEventHandler(std::function<void(SDL_Event)> function);
 };
 
 void loadGUI(std::string filePath);
@@ -33,6 +39,7 @@ UIElement* getHoveredElement(UIElement* element);
 bool isInBounds(UIElement element, int x, int y);
 
 void windowLoop();
+
 bool initSDL();
 bool loadMedia();
 void endSDL();

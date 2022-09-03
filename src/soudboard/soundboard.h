@@ -7,6 +7,7 @@
 
 #include <functional>
 #include <map>
+#include <SDL.h>
 
 class Soundboard : public EngineSystem {
 	public:
@@ -16,6 +17,8 @@ class Soundboard : public EngineSystem {
 
 		static void SBSelectBoard(EngineEvent event);
 		static void SBPlaySound(EngineEvent event);
+
+	static void SDLEventHandler(SDL_Event event);
 };
 
 
