@@ -12,17 +12,15 @@ elements:
             size: [-90, -40]
             
             elementHeight: 20
-            listWidth: 2
             
             #TODO: add list definition
-            #listName: boardsList
-            listName: testList
+            listName: sbBoards
             #listMode: single
             
             text: "test: |ELEMENT| test2"
             
             #onClick: event|ELEMENT|lol
-            onDoubleClick: SBSelectBoard\\|ELEMENT|
+            onDoubleClick: SBSelectBoard(|ELEMENT|)
             
       SoundsContainer:
         position: [1, 0]
@@ -33,11 +31,10 @@ elements:
             size: [-10, -40]
             
             elementHeight: 20
+            listWidth: 2
             
             #TODO: add list definition
-            #listName: soundsList
-            listName: testList
-            listWidth: 2
+            listName: sbSounds
             
             onDoubleClick: "SBPlaySound(|ELEMENT|)"
   

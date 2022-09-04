@@ -5,6 +5,8 @@
 
 class EngineSystem {
 	public:
+		std::string title;
+		
 		virtual void initialize() {};
 		virtual void update() {};
 		virtual void handleEvent(EngineEvent event) {};

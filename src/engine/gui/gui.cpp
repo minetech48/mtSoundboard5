@@ -20,7 +20,6 @@ std::vector<std::function<void(SDL_Event)>> GUI::SDLEventHandlers;
 //static int mouseX, mouseY;
 
 void GUI::initialize() {
-	printf("--System GUI Initializing\n");
 	
 	//ititializing variables
 	windowWidth = 800;
@@ -36,8 +35,6 @@ void GUI::initialize() {
 	//std::thread(windowLoop).detach();
 	
 	loadList("lists/testList");
-	
-	printf("--System GUI Initialized.\n");
 }
 
 void GUI::update() {

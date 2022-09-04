@@ -23,6 +23,8 @@ class GUI : public EngineSystem {
 		static std::vector<std::function<void(SDL_Event)>> SDLEventHandlers;
 	
 	public:
+		GUI() {title = "GUI";}
+		
 		void initialize();
 		void handleEvent(EngineEvent event);
 		void update();

@@ -31,7 +31,11 @@ void EngineCore::broadcast(std::string eventTitle) {
 void EngineCore::initSystem(EngineSystem* system) {
 	printf("Engine//Initializing System...\n");
 	
+	printf("--System %s Initializing\n", system->title.c_str());
+	
 	system->initialize();
+	
+	printf("--System %s Initialized.\n", system->title.c_str());
 	
 	systems.push_back(system);
 }
