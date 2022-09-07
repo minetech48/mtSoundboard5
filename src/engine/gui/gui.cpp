@@ -1,6 +1,6 @@
 #include "gui.h"
 
-static int windowWidth, windowHeight;
+const int windowWidth = 1000, windowHeight = 850;
 
 SDL_Window* window = NULL;
 
@@ -22,8 +22,6 @@ std::vector<std::function<void(SDL_Event)>> GUI::SDLEventHandlers;
 void GUI::initialize() {
 	
 	//ititializing variables
-	windowWidth = 800;
-	windowHeight = 800;
 	
 	initSDL();
 	//loadMedia();

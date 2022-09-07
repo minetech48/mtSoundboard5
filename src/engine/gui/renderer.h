@@ -28,6 +28,9 @@ class Renderer {
 		static bool setColor(std::string colorName);
 		static void clearColors();
 		
+		static void applyBorder(SDL_Rect* rect);
+		static void applyBorder(vec2i* start, vec2i* end);
+		
 		
 		static void start();
 		static void finish();

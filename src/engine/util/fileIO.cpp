@@ -37,3 +37,15 @@ std::string FileIO::getFileName(std::string filePath) {
 	
 	return filePath.substr(start, end-start);
 }
+std::string FileIO::removeFilePath(std::string filePath) {
+	int start = filePath.find_last_of('/')+1;
+	
+	return filePath.substr(start);
+}
+std::string FileIO::getFileExtention(std::string fileName){
+	int dotPos = fileName.find_last_of('.');
+	
+	if (dotPos == std::string::npos) return "";
+	
+	return fileName.substr(dotPos);
+}

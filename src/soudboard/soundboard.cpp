@@ -49,9 +49,11 @@ void Soundboard::loadBoards() {
 	std::vector<std::string>* boardsList = GUIData::getList("sbBoards");
 	
 	for (const auto& dir : fs::directory_iterator(SOUNDBOARDS_DIR)) {
+		if (FileIO::getFileExtention(dir.path()) != "") continue;
+		
 		printf("soundboard directory found: %s\n", dir.path().c_str());
 		
-		boardsList->push_back(FileIO::getFileName(dir.path()));
+		boardsList->push_back(FileIO::removeFilePath(dir.path()));
 	}
 }
 
@@ -63,6 +65,6 @@ void Soundboard::loadSounds(std::string boardName) {
 	for (const auto& dir : fs::directory_iterator(SOUNDBOARDS_DIR + boardName)) {
 		printf("sound file found: %s\n", dir.path().c_str());
 		
-		soundsList->push_back(FileIO::getFileName(dir.path()));
+		soundsList->push_back(FileIO::removeFilePath(dir.path()));
 	}
 }

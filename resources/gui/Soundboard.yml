@@ -20,7 +20,7 @@ elements:
             text: "test: |ELEMENT| test2"
             
             #onClick: event|ELEMENT|lol
-            onDoubleClick: SBSelectBoard(|ELEMENT|)
+            onClick: SBSelectBoard(|ELEMENT|)
             
       SoundsContainer:
         position: [1, 0]

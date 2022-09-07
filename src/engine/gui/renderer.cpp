@@ -80,10 +80,7 @@ void Renderer::drawElementRect(UIElement element) {
 	
 	SDL_RenderFillRect(sdl_renderer, &rect);
 	
-	rect.x+= GUIData::borderSize;
-	rect.y+= GUIData::borderSize;
-	rect.w-= GUIData::borderSize*2;
-	rect.h-= GUIData::borderSize*2;
+	applyBorder(&rect);
 	
 	setColor("Primary");
 	setColor(backgroundColor);
@@ -107,9 +104,9 @@ void Renderer::drawList(UIElement element) {
 	
 	
 	UIElement listElement;// = element.elements["ListElement"];
-	int elementHeight = element.getListElementHeight();
-	int elementWidth = element.getListElementWidth();
 	int listWidth = element.getDataInteger("listWidth");
+	int elementHeight = element.getListElementHeight();
+	int elementWidth = element.getListElementWidth() - GUIData::borderSize*2/listWidth;
 	
 	//listElement.position = element.position;
 	int startX = element.position.x + GUIData::borderSize;
@@ -134,17 +131,25 @@ void Renderer::drawList(UIElement element) {
 	
 	int selectedElement = element.getListSelected();
 	
+	int oldBorder = GUIData::borderSize;
+	GUIData::borderSize/= 2;//adjusting border for elements
+	
 	int posI = -1 + startCount % listWidth;
 	for (int i = startCount; i < endCount; i++) {
 		posI++;
 		listElement.metadata["text"] = (*list)[i];
 		
 		listElement.position.x = startX + elementWidth * (i % listWidth);
-		listElement.position2.x = listElement.position.x + elementWidth;
+		
+		if (i % listWidth == listWidth-1)//rounding to list's edge
+			listElement.position2.x = element.position2.x-GUIData::borderSize*2;
+		else
+			listElement.position2.x = listElement.position.x + elementWidth;
 		
 		listElement.position.y = startY + (elementHeight * (i / listWidth));
 		listElement.position2.y = listElement.position.y + elementHeight;
 		
+		//applyBorder(&listElement.position, &listElement.position2);
 		
 		if (selectedElement == i)
 			listElement.focused = true;
@@ -161,6 +166,7 @@ void Renderer::drawList(UIElement element) {
 	
 	
 	SDL_RenderSetClipRect(sdl_renderer, NULL);
+	GUIData::borderSize = oldBorder;//resetting borders
 }
 
 
@@ -269,6 +275,19 @@ bool Renderer::setColor(std::string colorName) {
 }
 void Renderer::clearColors() {
 	GUIData::colors.clear();
+}
+
+void Renderer::applyBorder(SDL_Rect* rect) {
+	rect->x+= GUIData::borderSize;
+	rect->y+= GUIData::borderSize;
+	rect->w-= GUIData::borderSize*2;
+	rect->h-= GUIData::borderSize*2;
+}
+void Renderer::applyBorder(vec2i* start, vec2i* end) {
+	start->x+= GUIData::borderSize;
+	start->y+= GUIData::borderSize;
+	end->x-= GUIData::borderSize*2;
+	end->y-= GUIData::borderSize*2;
 }
 
 //rendering actions

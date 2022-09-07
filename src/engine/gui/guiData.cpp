@@ -11,6 +11,7 @@ std::unordered_map<std::string, std::string> GUIData::strings;
 
 
 int GUIData::mouseX = 0, GUIData::mouseY = 0;
+int GUIData::borderSize = 2;
 
 //getter functions
 
@@ -105,6 +106,8 @@ std::string GUIData::convertString(const char* str) {
 }
 
 void GUIData::addList(std::string key, std::vector<std::string> list) {
+	if (lists.contains(key)) lists.erase(key);
+	
 	lists.insert({key, list});
 }
 std::vector<std::string>* GUIData::getList(std::string key) {

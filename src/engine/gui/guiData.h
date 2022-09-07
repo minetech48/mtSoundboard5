@@ -7,7 +7,7 @@
 class GUIData {
 	public:
 		static int mouseX, mouseY;
-		static const int borderSize = 2;
+		static int borderSize;
 		
 		static std::unordered_map<std::string, SDL_Color> colors;
 		static std::unordered_map<std::string, TTF_Font*> fonts;
