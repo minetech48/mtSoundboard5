@@ -1,7 +1,11 @@
 #include <unordered_map>
 
 #include "guiData.h"
+#include "gui.h"
 #include "../util/stringReader.h"
+
+
+std::unordered_map<std::string, UIElement*> GUIData::elementsMap;
 
 std::unordered_map<std::string, SDL_Color> GUIData::colors;
 std::unordered_map<std::string, TTF_Font*> GUIData::fonts;
@@ -9,11 +13,36 @@ std::unordered_map<std::string, std::vector<std::string>> GUIData::lists;
 
 std::unordered_map<std::string, std::string> GUIData::strings;
 
+std::unordered_map<std::string, std::function<std::string(std::string)>> GUIData::stringHandlers;
 
 int GUIData::mouseX = 0, GUIData::mouseY = 0;
 int GUIData::borderSize = 2;
 
 //getter functions
+UIElement* GUIData::getElement(std::string elementName) {
+	if (elementsMap.contains(elementName))
+		return elementsMap[elementName];
+	
+	StringReader reader(elementName);
+	
+	std::string key = reader.advanceTo('.');
+	if (GUI::menus.contains(key)) {
+		UIElement* element = &(GUI::menus[key]);
+		std::string readString;
+		
+		while (reader.hasNext()) {
+			readString = reader.advanceTo('.');
+			
+			if (element->elements.contains(readString))
+				element = &(element->elements[readString]);
+			else return NULL;
+		}
+		
+		return element;
+	}
+	
+	return NULL;
+}
 
 //color handling
 void GUIData::addColor(std::string colorName, SDL_Color color) {
@@ -56,11 +85,32 @@ std::string GUIData::getString(std::string key) {
 std::string GUIData::convertString(const char* str) {
 	std::string toReturn;
 	
-	if (strings.find(str) != strings.end()) {
+	if (strings.contains(str)) {
 		return getString(str);
 	}
 	
 	StringReader reader(str);
+	
+	std::string key = reader.advanceTo('.');
+	if (reader.hasNext()) {
+		if (elementsMap.contains(key)) {
+			return elementsMap[key]->getReturnValue();
+		}else if (GUI::menus.contains(key)) {
+			UIElement* element = &GUI::menus[key];
+			std::string readString;
+			
+			while (reader.hasNext()) {
+				readString = reader.advanceTo('.');
+				
+				if (element->elements.contains(readString))
+					element = &(element->elements[readString]);
+			}
+			
+			return element->getReturnValue();
+		}else if (stringHandlers.contains(key))
+			return stringHandlers[key](reader.advanceTo('\0'));
+	}
+	reader.setPosition(-1);
 	
 	char c;
 	while (reader.hasNext()) {
@@ -103,6 +153,10 @@ std::string GUIData::convertString(const char* str) {
 	}
 	
 	return toReturn;
+}
+
+void GUIData::addStringHandler(std::string key, std::function<std::string(std::string)> func) {
+	stringHandlers.insert({key, func});
 }
 
 void GUIData::addList(std::string key, std::vector<std::string> list) {

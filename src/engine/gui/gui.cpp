@@ -1,5 +1,7 @@
 #include "gui.h"
 
+#include <queue>
+
 const int windowWidth = 1000, windowHeight = 850;
 
 SDL_Window* window = NULL;
@@ -13,7 +15,7 @@ UIElement* focusedElement;
 
 UIElement* clickedElement;
 
-std::map<std::string, UIElement> menus;
+std::map<std::string, UIElement> GUI::menus;
 
 std::vector<std::function<void(SDL_Event)>> GUI::SDLEventHandlers;
 
@@ -130,9 +132,26 @@ void loadGUI(std::string filePath) {
 	
 	UIElement::alignElement(&rootElement, &menu);
 	
-	menus[menu.name] = menu;
+	GUI::menus[menu.name] = menu;
 	
-	//printf("%s\n", menu.elements["OtherButton"].text.c_str());
+	//sudo-recursive code for adding element pointers to global list in GUIData
+	std::queue<UIElement*> elementList;
+	elementList.push(&GUI::menus[menu.name]);
+	
+	UIElement* currentElement;
+	while (!elementList.empty()) {
+		currentElement = elementList.front();
+		elementList.pop();
+		
+		if (currentElement->isContainer()) {
+			for (auto& element : currentElement->elements) {
+				elementList.push(&element.second);
+			}
+		}
+		
+		if (currentElement->containsData("globalName"))
+			GUIData::elementsMap.insert({currentElement->getDataString("globalName"), currentElement});
+	}
 }
 
 //parsing theme file
@@ -154,7 +173,7 @@ void loadList(std::string filePath) {
 	
 	if (file.is_open()) {
 		std::string line;
-		GUIData::addList(listName, {"test1"});
+		GUIData::addList(listName, {});
 		
 		while (std::getline(file, line)) {
 			GUIData::getList(listName)->push_back(line);
@@ -166,7 +185,9 @@ void loadList(std::string filePath) {
 }
 
 void resetGUI() {
-	for (auto const& child : menus) {
+	GUIData::elementsMap.clear();
+	
+	for (auto const& child : GUI::menus) {
 		loadGUI(child.second.name);
 	}
 	EngineCore::broadcast("GUISetTheme", "gui/theming/DefaultTheme");
@@ -183,7 +204,7 @@ void windowLoop() {
 			
 		case SDL_MOUSEBUTTONDOWN:
 			if (focusedElement == NULL) break;
-			focusedElement->click();
+			focusedElement->click(event.button.clicks);
 			clickedElement = focusedElement;
 			break;
 			

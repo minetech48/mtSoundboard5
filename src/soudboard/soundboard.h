@@ -15,6 +15,10 @@ class Soundboard : public EngineSystem {
 	static bimap<std::string, int> boardBindings;
 	static bimap<std::string, int> soundBindings;
 	
+	static std::string currentBoard;
+	
+	static bool boardBinding, soundBinding;
+	
 	public:
 		Soundboard() {title = "Soundboard";}
 		
@@ -24,12 +28,30 @@ class Soundboard : public EngineSystem {
 
 		static void SBSelectBoard(EngineEvent event);
 		static void SBPlaySound(EngineEvent event);
+		
+		static inline void SBBoardBinding(EngineEvent event) {boardBinding = true;}
+		static inline void SBSoundBinding(EngineEvent event) {soundBinding = true;}
+		static void SBBoardBindingR(EngineEvent event);
+		static void SBSoundBindingR(EngineEvent event);
+		
+		static void GUIReset(EngineEvent event);
+		static void Shutdown(EngineEvent event);
 
 	static void SDLEventHandler(SDL_Event event);
+	
+	static std::string boardStringHandler(std::string str);
+	static std::string soundStringHandler(std::string str);
+	
+	static std::string keyToString(int keyCode);
 	
 	
 	static void loadBoards();
 	static void loadSounds(std::string boardName);
+	
+	static void setBinding(bimap<std::string, int>* bindingMap, std::string action, int trigger);
+	
+	static void loadBindings(std::string filePath, bimap<std::string, int>* bindingMap);
+	static void saveBindings(std::string filePath, bimap<std::string, int>* bindingMap);
 };
 
 

@@ -1,5 +1,7 @@
 #include "renderer.h"
 
+#include <regex>
+
 static SDL_Renderer* sdl_renderer = NULL;
 
 static TTF_Font* currentFont = NULL;
@@ -26,7 +28,7 @@ void Renderer::renderElement(UIElement element) {
 		drawElementRect(element);
 	
 	//drawing element text
-	if (element.containsData("text")) {
+	if (element.containsData("text") || element.containsData("text2")) {
 		setColor("TextDefault");
 		
 		//font switching
@@ -38,12 +40,16 @@ void Renderer::renderElement(UIElement element) {
 		
 		//text centering for buttons
 		if (element.isButton()) {
-			renderText(element.getDataString("text"),
-				 element.position.x, element.position.y,
-				 element.position2.x - element.position.x,
-				 element.position2.y - element.position.y);
+			if (element.containsData("text"))
+				renderText(element.getDataString("text"),
+					element.position.x, element.position.y,
+					element.position2.x - element.position.x,
+					element.position2.y - element.position.y);
 		}else{
-			renderText(element.getDataString("text"), element.position.x, element.position.y);
+			if (element.getDataString("text") != "")
+				renderText(element.getDataString("text"), element.position.x, element.position.y);
+			if (element.getDataString("text2") != "")
+				renderTextRight(element.getDataString("text2"), element.position2.x, element.position.y);
 		}
 	}
 	
@@ -134,10 +140,21 @@ void Renderer::drawList(UIElement element) {
 	int oldBorder = GUIData::borderSize;
 	GUIData::borderSize/= 2;//adjusting border for elements
 	
+	std::string text = element.getDataString("text");
+	std::string text2 = element.getDataString("text2");
+	
+	//drawing elements with special positioning system
 	int posI = -1 + startCount % listWidth;
 	for (int i = startCount; i < endCount; i++) {
 		posI++;
-		listElement.metadata["text"] = (*list)[i];
+		if (text != "")
+			listElement.metadata["text"] = std::regex_replace(text, std::regex("\\|ELEMENT\\|"),
+					(*list)[i]);
+		else
+			listElement.metadata["text"] = (*list)[i];
+		if (text2 != "")
+			listElement.metadata["text2"] = std::regex_replace(text2, std::regex("\\|ELEMENT\\|"),
+					(*list)[i]);
 		
 		listElement.position.x = startX + elementWidth * (i % listWidth);
 		
@@ -172,6 +189,8 @@ void Renderer::drawList(UIElement element) {
 
 void Renderer::renderTextRaw(char* text, int x, int y, int centerWidth, int centerHeight) {
 	//printf("text: %s\n", text.c_str());
+	if (text[0] == 0) return;
+	
 	SDL_Surface* textSurface = TTF_RenderText_Solid(
 		currentFont,
 		text,
@@ -203,33 +222,47 @@ void Renderer::renderTextRaw(char* text, int x, int y, int centerWidth, int cent
 //high(er) level draw functions
 //draw string macro, adjusted for border
 #define finishString() \
-			drawStr[drawIndex] = '\0';\
-			renderTextRaw(drawStr,\
-			x			+GUIData::borderSize+1,\
-			printY		+GUIData::borderSize-1,\
-			centerWidth	- (centerWidth ? (GUIData::borderSize+1)*2 : 0),\
-			centerHeight- (centerHeight? (GUIData::borderSize-1)*2 : 0));
+		drawStr[drawIndex] = '\0';\
+		renderTextRaw(drawStr,\
+		printX,\
+		printY,\
+		centerWidth	- (centerWidth ? (GUIData::borderSize+1)*2 : 0),\
+		centerHeight- (centerHeight? (GUIData::borderSize-1)*2 : 0));
 			
-void Renderer::renderText(std::string text, int x, int y, int centerWidth, int centerHeight) {
+void Renderer::renderText(std::string text, int x, int y, int centerWidth, int centerHeight, bool right) {
 	text = GUIData::convertString(text);
 	
 	char drawStr[text.length()];
 	const char* textPtr = text.c_str();
-	int drawIndex = 0, printY = y;
+	int drawIndex = 0,
+		printY = y +GUIData::borderSize-1,
+		printX = x +GUIData::borderSize+1;
 	
 	for (int i = 0; i < text.length(); i++) {
 		if (textPtr[i] == '\n' || (textPtr[i] == '\\' && textPtr[i+1] == 'n')) {
-			finishString();
-			drawIndex = 0;
-			
 			int textHeight = 0;
-			TTF_SizeText(currentFont, drawStr, NULL, &textHeight);
+			int textWidth = 0;
+			TTF_SizeText(currentFont, drawStr, &textWidth, &textHeight);
+			if (right)
+				printX = x-textWidth -GUIData::borderSize-1;
+				
+			finishString();
+			
+			drawIndex = 0;
 			printY+= textHeight;
+			
 			i++;
 			continue;
 		}
 		
 		drawStr[drawIndex++] = textPtr[i];
+	}
+	drawStr[drawIndex] = '\0';
+	
+	if (right) {
+		int textWidth = 0;
+		TTF_SizeText(currentFont, drawStr, &textWidth, NULL);
+		printX = x-textWidth -GUIData::borderSize-1;
 	}
 	finishString();
 }

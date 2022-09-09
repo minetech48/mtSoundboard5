@@ -3,19 +3,28 @@
 #include <SDL_ttf.h>
 #include <yaml-cpp/yaml.h>
 #include <unordered_map>
+#include <functional>
+
+class UIElement;
 
 class GUIData {
 	public:
 		static int mouseX, mouseY;
 		static int borderSize;
 		
+		static std::unordered_map<std::string, UIElement*> elementsMap;
+		
 		static std::unordered_map<std::string, SDL_Color> colors;
 		static std::unordered_map<std::string, TTF_Font*> fonts;
 		static std::unordered_map<std::string, std::vector<std::string>> lists;
-
+		
 		static std::unordered_map<std::string, std::string> strings;
 		
+		static std::unordered_map<std::string, std::function<std::string(std::string)>> stringHandlers;
+		
 	public:
+		static UIElement* getElement(std::string elementName);
+		
 		static void addColor(std::string colorName, SDL_Color color);
 		static SDL_Color getColor(std::string colorName);
 		
@@ -32,4 +41,6 @@ class GUIData {
 		
 		static std::string convertString(const char* str);
 		static std::string convertString(std::string str) {return convertString(str.c_str());}
+		
+		static void addStringHandler(std::string, std::function<std::string(std::string)>);
 };

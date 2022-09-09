@@ -10,6 +10,7 @@ elements:
           BoardsList:
             position: [10, 10]
             size: [-90, -40]
+            globalName: BoardsList
             
             elementHeight: 20
             
@@ -17,7 +18,8 @@ elements:
             listName: sbBoards
             #listMode: single
             
-            text: "test: |ELEMENT| test2"
+            #text: "test: |ELEMENT| test2"
+            text2: "SBBoardBind.|ELEMENT|"
             
             #onClick: event|ELEMENT|lol
             onClick: SBSelectBoard(|ELEMENT|)
@@ -26,15 +28,18 @@ elements:
         position: [1, 0]
         
         elements:
-          BoardsList:
+          SoundsList:
             position: [90, 10]
             size: [-10, -40]
+            globalName: SoundsList
             
             elementHeight: 20
             listWidth: 2
             
             #TODO: add list definition
             listName: sbSounds
+            
+            text2: "SBSoundBind.|ELEMENT|"
             
             onDoubleClick: "SBPlaySound(|ELEMENT|)"
   
@@ -47,7 +52,8 @@ elements:
         
         text: playSound
         
-        onClick: SBPlaySound\\\$SoundBoard.sounds\
+        #onClick: SBPlaySound(\$Soundboard.ListContainer.SoundsContainer.SoundsList\)
+        onClick: SBPlaySound(\$SoundsList\)
       
       StopSounds:
         position: [-60, 50]
@@ -84,7 +90,6 @@ elements:
         position: [-80, 160]
         size: [160, 30]
         centerX:
-        toggle:
         
         text: clearBinding
         

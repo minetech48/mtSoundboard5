@@ -80,18 +80,18 @@ void UIElement::alignElement(UIElement* parentPtr, UIElement* elementPtr) {
 	// );
 }
 
-std::chrono::steady_clock::time_point lastClick;
-void UIElement::click() {
+void UIElement::click(int clicks) {
 	//testing for double click
 	bool doubleClick = false;
 	std::string action;
-	if (lastClick + std::chrono::milliseconds(200) > std::chrono::steady_clock::now() 
-			&& containsData("onDoubleClick")) {
+	if (clicks > 1 && containsData("onDoubleClick")) {
 		doubleClick = true;
 		action = getDataString("onDoubleClick");
 	}else{
 		action = getDataString("onClick");
 	}
+	
+	action = GUIData::convertString(action);
 	
 	if (isList()) {
 		std::vector<std::string>* list = GUIData::getList(getDataString("listName"));
@@ -111,8 +111,6 @@ void UIElement::click() {
 		EngineCore::broadcast(action);
 		active = true;
 	}
-	
-	lastClick = std::chrono::steady_clock::now();
 }
 void UIElement::unclick() {
 	if (!isButton()) return;
@@ -122,4 +120,12 @@ void UIElement::unclick() {
 		
 	if (isList() && getDataString("listMode") == "single")
 		listActive = -1;
+}
+
+std::string UIElement::getReturnValue() {
+	if (isList()) {
+		return GUIData::getList(getDataString("listName"))->operator[](listActive);
+	}
+	
+	return "";
 }

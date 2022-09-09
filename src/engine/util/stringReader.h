@@ -17,7 +17,7 @@ struct StringReader {
 	char next() 	{++index; return current();}
 	char previous()	{--index; return current();}
 	
-	//Todo: use substring instead of constand appending for performance?
+	//Todo: use substring instead of constant appending for performance?
 	std::string advanceTo(char c) {
 		std::string toReturn = "";
 		
@@ -26,5 +26,8 @@ struct StringReader {
 		}
 		
 		return toReturn;
+	}
+	void setPosition(int i) {
+		index = i;
 	}
 };

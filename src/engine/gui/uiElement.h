@@ -40,7 +40,7 @@ struct UIElement {
 	int getSizeY() {return position2.y - position.y;}
 	vec2i getSize() {return {getSizeX(), getSizeY()};}
 	
-	bool containsData(std::string key) {return metadata.find(key) != metadata.end();}
+	bool containsData(std::string key) {return metadata.contains(key);}
 	std::string getDataString(std::string key) {return containsData(key) ? 
 		metadata[key].as<std::string>() : "";}
 	int getDataInteger(std::string key) {return containsData(key) ? 
@@ -59,6 +59,8 @@ struct UIElement {
 			((GUIData::mouseX-GUIData::borderSize-position.x) / getListElementWidth()): -1;
 	}
 	
+	std::string getReturnValue();
+	
 	bool isFocusable() {return !isContainer() || isList();}
 	
 	bool isButton() {return containsData("onClick") || containsData("onDoubleClick");}
@@ -68,7 +70,8 @@ struct UIElement {
 	
 	static void alignElement(UIElement* parentPtr, UIElement* elementPtr);
 	
-	void click();
+	void click(int clicks);
+	void inline click() {click(1);}
 	void unclick();
 };
 

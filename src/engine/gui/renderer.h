@@ -12,8 +12,10 @@ class Renderer {
 		static void renderElement(UIElement element);
 		static void renderTextRaw(char* text, int x, int y, int centerWidth, int centerHeight);
 		
-		static void renderText(std::string text, int x, int y, int centerWidth, int centerHeight);
-		static void renderText(std::string text, int x, int y) {renderText(text, x, y, 0, 0);}
+		static void renderText(std::string text, int x, int y, int centerWidth, int centerHeight, bool right);
+		static inline void renderText(std::string text, int x, int y, int centerWidth, int centerHeight) {renderText(text, x, y, centerWidth, centerHeight, false);}
+		static inline void renderText(std::string text, int x, int y) {renderText(text, x, y, 0, 0);}
+		static inline void renderTextRight(std::string text, int x, int y) {renderText(text, x, y, 0, 0, true);}
 		
 		static void drawElementRect(UIElement element);
 		
