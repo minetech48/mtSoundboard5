@@ -232,7 +232,7 @@ void Renderer::renderTextRaw(char* text, int x, int y, int centerWidth, int cent
 void Renderer::renderText(std::string text, int x, int y, int centerWidth, int centerHeight, bool right) {
 	text = GUIData::convertString(text);
 	
-	char drawStr[text.length()];
+	char* drawStr = new char[text.length()+2];
 	const char* textPtr = text.c_str();
 	int drawIndex = 0,
 		printY = y +GUIData::borderSize-1,
@@ -265,6 +265,8 @@ void Renderer::renderText(std::string text, int x, int y, int centerWidth, int c
 		printX = x-textWidth -GUIData::borderSize-1;
 	}
 	finishString();
+	
+	delete[] drawStr;
 }
 #undef finishString
 

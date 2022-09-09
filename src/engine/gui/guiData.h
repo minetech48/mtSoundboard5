@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <functional>
 
-class UIElement;
+struct UIElement;
 
 class GUIData {
 	public:
