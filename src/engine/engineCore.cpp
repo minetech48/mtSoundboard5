@@ -72,6 +72,10 @@ void EngineCore::runLoop() {
 	
 	broadcast(EngineEvent("Shutdown"));
 	processEvents();
+	
+	for (EngineSystem* system : systems) {
+		delete system;
+	}
 }
 
 void EngineCore::processEvents() {

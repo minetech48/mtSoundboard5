@@ -10,22 +10,16 @@
 		GUI Lists: auto load list file
 		GUI: init script (lua?)
 		GUI: system fonts
+		
+		SB: audio playback
+		SB: Windows keyboard hook
+		SB: ensure .mp3 and .ogg files can be played
 */
 
 
 int main(int argc, char* args[]) {
-	EngineEvent engineEvent("testEvent");
-	
-	// EngineSystem* sysObj;
-	// GUI guiObj;
-	// sysObj = &guiObj;
-	GUI guiObj;
-	Soundboard sbObj;
-	
-	EngineCore::initSystem(&guiObj);
-	EngineCore::initSystem(&sbObj);
-	
-	EngineCore::broadcast(engineEvent);
+	EngineCore::initSystem(new GUI());
+	EngineCore::initSystem(new Soundboard());
 	
 	EngineCore::broadcast("GUISetTheme", "gui/theming/DefaultTheme");
 	EngineCore::broadcast("GUILoadList", "lists/testList");
