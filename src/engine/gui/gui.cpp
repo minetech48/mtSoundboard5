@@ -4,7 +4,7 @@
 
 const int windowWidth = 1000, windowHeight = 850;
 
-SDL_Window* window = NULL;
+SDL_Window* GUI::window = NULL;
 
 SDL_Surface* windowSurface = NULL;
 SDL_Surface* testImage = NULL;
@@ -255,14 +255,14 @@ bool initSDL() {
 	}
 
 	//Creating window
-	window = SDL_CreateWindow("SDL Test", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, windowWidth, windowHeight, SDL_WINDOW_SHOWN);
-	if (window == NULL) {
+	GUI::window = SDL_CreateWindow("SDL Test", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, windowWidth, windowHeight, SDL_WINDOW_SHOWN);
+	if (GUI::window == NULL) {
 		printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
 		return false;
 	}
 	//windowSurface = SDL_GetWindowSurface(window);
 	
-    SDL_Renderer* gRenderer = SDL_CreateRenderer( window, -1, SDL_RENDERER_ACCELERATED );
+    SDL_Renderer* gRenderer = SDL_CreateRenderer( GUI::window, -1, SDL_RENDERER_ACCELERATED );
 	if (gRenderer == NULL) {
 		printf("Failed to create renderer: %s\n", SDL_GetError());
 		return false;
@@ -315,8 +315,8 @@ void endSDL() {
 	testImage = NULL;
 
 	//Destroy window
-	SDL_DestroyWindow(window);
-	window = NULL;
+	SDL_DestroyWindow(GUI::window);
+	GUI::window = NULL;
 	
 	Renderer::close();
 	

@@ -22,6 +22,7 @@ class GUI : public EngineSystem {
 	public:
 		static std::vector<std::function<void(SDL_Event)>> SDLEventHandlers;
 		static std::map<std::string, UIElement> menus;
+		static SDL_Window* window;
 	
 	public:
 		GUI() {title = "GUI";}

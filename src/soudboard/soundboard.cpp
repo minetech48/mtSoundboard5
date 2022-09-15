@@ -3,6 +3,7 @@
 #include "engine/gui/gui.h"
 #include "engine/gui/guiData.h"
 #include "engine/util/fileIO.h"
+#include "keyboardHook.h"
 
 #include <fstream>
 namespace fs = std::filesystem;
@@ -35,6 +36,9 @@ void Soundboard::initialize() {
 	GUIData::addStringHandler("SBSoundBind", soundStringHandler);
 	
 	loadBoards();
+	
+	printf("Starting keyboard hook:\n");
+	KeyboardHook::initialize();
 }
 
 void Soundboard::handleEvent(EngineEvent event) {
@@ -42,7 +46,9 @@ void Soundboard::handleEvent(EngineEvent event) {
 		eventMap[event.event](event);
 }
 
-void Soundboard::update() {}
+void Soundboard::update() {
+	KeyboardHook::pollEvents();
+}
 
 void Soundboard::SDLEventHandler(SDL_Event event) {
 	
@@ -51,16 +57,26 @@ void Soundboard::SDLEventHandler(SDL_Event event) {
 			int keyCode = event.key.keysym.sym;
 			
 			keyCode = keyCode | (event.key.keysym.mod << 8);
+			//hijacking padding2 to determine where keypress originates
+			bool localKey = !event.key.padding2;
 			
 			if (boardBinding) {
-				setBinding(&boardBindings,
-					GUIData::getElement("BoardsList")->getReturnValue(), keyCode);
-					
+				if (localKey)
+					setBinding(&boardBindings,
+						GUIData::getElement("BoardsList")->getReturnValue(), keyCode);
+				return;
 			}else if (soundBinding) {
-				setBinding(&soundBindings,
-					GUIData::getElement("SoundsList")->getReturnValue(), keyCode);
-					
+				if (localKey)
+					setBinding(&soundBindings,
+						GUIData::getElement("SoundsList")->getReturnValue(), keyCode);
+				return;
 			}
+			if (localKey) return;
+			
+			if (boardBindings.keysMap.contains(keyCode))
+				EngineCore::broadcast("SBSelectBoard", boardBindings.getKey(keyCode));
+			else if (soundBindings.keysMap.contains(keyCode))
+				printf("sound: %s\n", soundBindings.getKey(keyCode).c_str());
 			
 			break;
 	}
@@ -91,7 +107,10 @@ void Soundboard::GUIReset(EngineEvent event) {
 	soundBindings.clear();
 	
 	loadBoards();
-	loadSounds(currentBoard);
+	if (currentBoard != "")
+		loadSounds(currentBoard);
+	
+	KeyboardHook::initialize();
 }
 
 void Soundboard::Shutdown(EngineEvent event) {
