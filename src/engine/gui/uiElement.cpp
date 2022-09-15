@@ -94,14 +94,11 @@ void UIElement::click(int clicks) {
 	action = GUIData::convertString(action);
 	
 	if (isList()) {
-		std::vector<std::string>* list = GUIData::getList(getDataString("listName"));
+		listActive = getListSelected();
 		
-		if (list != NULL) {
-			action = std::regex_replace(action, std::regex("\\|ELEMENT\\|"),
-				(*list)[getListSelected()]);
-			
-			listActive = getListSelected();
-		}
+		action = std::regex_replace(action, std::regex("\\|ELEMENT\\|"),
+			getReturnValue());
+		
 	}
 	
 	if (isSwitch() && active) {
@@ -124,7 +121,10 @@ void UIElement::unclick() {
 
 std::string UIElement::getReturnValue() {
 	if (isList()) {
-		return GUIData::getList(getDataString("listName"))->operator[](listActive);
+		std::vector<std::string>* list = GUIData::getList(getDataString("listName"));
+		
+		if (listActive >= 0 && list->size() > listActive)
+			return list->operator[](listActive);
 	}
 	
 	return "";

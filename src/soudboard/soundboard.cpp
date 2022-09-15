@@ -84,6 +84,8 @@ void Soundboard::SDLEventHandler(SDL_Event event) {
 
 
 void Soundboard::SBSelectBoard(EngineEvent event) {
+	if (event.arg1 == "") return;
+	
 	currentBoard = event.arg1;
 	loadSounds(event.arg1);
 }
