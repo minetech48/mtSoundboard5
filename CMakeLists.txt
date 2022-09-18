@@ -15,7 +15,6 @@ find_package(SDL2 CONFIG REQUIRED)
 find_package(sdl2-image CONFIG REQUIRED)
 find_package(SDL2_ttf CONFIG REQUIRED)
 find_package(yaml-cpp CONFIG REQUIRED)
-find_package(SDL2_mixer CONFIG REQUIRED)
 
 
 # Include any headers and c files to add to the executable
@@ -45,6 +44,5 @@ target_link_libraries(${PROJECT_NAME}
 	yaml-cpp
 	
 	$<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,SDL2_ttf::SDL2_ttf,SDL2_ttf::SDL2_ttf-static>
-	$<IF:$<TARGET_EXISTS:SDL2_mixer::SDL2_mixer>,
-		SDL2_mixer::SDL2_mixer,SDL2_mixer::SDL2_mixer-static>
+	
 )

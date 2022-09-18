@@ -10,6 +10,8 @@
 #include <map>
 #include <SDL.h>
 
+#include "miniaudio.h"
+
 class Soundboard : public EngineSystem {
 		
 	static bimap<std::string, int> boardBindings;
@@ -56,3 +58,16 @@ class Soundboard : public EngineSystem {
 
 
 static std::map<std::string, std::function<void(EngineEvent)>> eventMap;
+
+class SBAudio {
+	public:
+		static ma_engine engine, engine2;
+		static ma_engine_config engineConfig;
+		
+		static ma_device_info *playbackInfos;
+		static ma_uint32 playbackInfoSize;
+		
+		static void initialize();
+		
+		static void playSound(std::string path);
+};

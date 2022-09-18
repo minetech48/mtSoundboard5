@@ -52,8 +52,8 @@ elements:
         
         text: playSound
         
-        #onClick: SBPlaySound(\$Soundboard.ListContainer.SoundsContainer.SoundsList\)
-        onClick: SBPlaySound(\$SoundsList\)
+        onClick: SBPlaySound(\$Soundboard.ListContainer.SoundsContainer.SoundsList\)
+        #onClick: SBPlaySound(\$SoundsList\)
       
       StopSounds:
         position: [-60, 50]

@@ -37,6 +37,9 @@ void Soundboard::initialize() {
 	
 	loadBoards();
 	
+	printf("Starting audio player:\n");
+	SBAudio::initialize();
+	
 	printf("Starting keyboard hook:\n");
 	KeyboardHook::initialize();
 }
@@ -76,7 +79,8 @@ void Soundboard::SDLEventHandler(SDL_Event event) {
 			if (boardBindings.keysMap.contains(keyCode))
 				EngineCore::broadcast("SBSelectBoard", boardBindings.getKey(keyCode));
 			else if (soundBindings.keysMap.contains(keyCode))
-				printf("sound: %s\n", soundBindings.getKey(keyCode).c_str());
+				SBAudio::playSound(SOUNDBOARDS_DIR + currentBoard + "/" +
+										 soundBindings.getKey(keyCode));
 			
 			break;
 	}
@@ -91,7 +95,8 @@ void Soundboard::SBSelectBoard(EngineEvent event) {
 }
 
 void Soundboard::SBPlaySound(EngineEvent event) {
-	printf("playing sound %s\n", event.arg1.c_str());
+	//printf("playing sound %s\n", event.arg1.c_str());
+	SBAudio::playSound(SOUNDBOARDS_DIR + currentBoard + "/" + event.arg1);
 }
 
 void Soundboard::SBBoardBindingR(EngineEvent event) {

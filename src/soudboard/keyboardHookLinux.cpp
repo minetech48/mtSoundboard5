@@ -20,7 +20,7 @@ XEvent event;
 static int modifierMask;
 
 void KeyboardHook::initialize() {
-	printf("test, unix system!\n");
+	printf("\tInitializing for Unix system.\n");
 	
 	xdisplay = XOpenDisplay(std::getenv("DISPLAY"));//getting root of current main display
 	if (xdisplay == NULL) {
@@ -38,9 +38,11 @@ void KeyboardHook::initialize() {
 	XISetMask(mask.mask, XI_RawKeyPress);
 	XISetMask(mask.mask, XI_RawKeyRelease);
 	XISelectEvents(xdisplay, DefaultRootWindow(xdisplay), &mask, 1);
-
+	
 	XSync(xdisplay, 0);
 	free(mask.mask);
+	
+	printf("\tSuccessfully initialized XInput2 keyboard hook!\n");
 }
 
 #define modCase(xkey, SDL_Mask) \
