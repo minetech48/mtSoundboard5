@@ -9,6 +9,7 @@
 #include <functional>
 #include <map>
 #include <SDL.h>
+#include <unordered_set>
 
 #include "miniaudio.h"
 
@@ -30,6 +31,7 @@ class Soundboard : public EngineSystem {
 
 		static void SBSelectBoard(EngineEvent event);
 		static void SBPlaySound(EngineEvent event);
+		static void SBStopSounds(EngineEvent event);
 		
 		static inline void SBBoardBinding(EngineEvent event) {boardBinding = true;}
 		static inline void SBSoundBinding(EngineEvent event) {soundBinding = true;}
@@ -61,13 +63,18 @@ static std::map<std::string, std::function<void(EngineEvent)>> eventMap;
 
 class SBAudio {
 	public:
-		static ma_engine engine, engine2;
+		static std::vector<ma_engine*> playbackEngines;
 		static ma_engine_config engineConfig;
+		static ma_resource_manager resourceManager;
 		
-		static ma_device_info *playbackInfos;
-		static ma_uint32 playbackInfoSize;
+		static int engineIndex;
+		static std::unordered_set<ma_sound*> activeSounds;
 		
 		static void initialize();
 		
+		static void update();
+		
 		static void playSound(std::string path);
+		
+		static void stopAll();
 };

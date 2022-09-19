@@ -26,6 +26,7 @@ void Soundboard::initialize() {
 	eventMap.insert({"SBBoardBindingR", SBBoardBindingR});
 	eventMap.insert({"SBSoundBinding", SBSoundBinding});
 	eventMap.insert({"SBSoundBindingR", SBSoundBindingR});
+	eventMap.insert({"SBStopSounds", SBStopSounds});
 	
 	eventMap.insert({"GUIReset", GUIReset});
 	eventMap.insert({"Shutdown", Shutdown});
@@ -51,6 +52,8 @@ void Soundboard::handleEvent(EngineEvent event) {
 
 void Soundboard::update() {
 	KeyboardHook::pollEvents();
+	
+	SBAudio::update();
 }
 
 void Soundboard::SDLEventHandler(SDL_Event event) {
@@ -97,6 +100,9 @@ void Soundboard::SBSelectBoard(EngineEvent event) {
 void Soundboard::SBPlaySound(EngineEvent event) {
 	//printf("playing sound %s\n", event.arg1.c_str());
 	SBAudio::playSound(SOUNDBOARDS_DIR + currentBoard + "/" + event.arg1);
+}
+void Soundboard::SBStopSounds(EngineEvent event) {
+	SBAudio::stopAll();
 }
 
 void Soundboard::SBBoardBindingR(EngineEvent event) {

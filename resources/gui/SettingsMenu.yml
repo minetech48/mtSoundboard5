@@ -1,0 +1,12 @@
+elements:
+  
+  GridContainer1:
+    gridSize: [2,2]
+    
+    elements:
+      button:
+        position: [1, 1]
+        size: [1, 1]
+        
+        text: hello
+        onClick: testEvent

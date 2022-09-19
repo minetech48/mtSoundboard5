@@ -102,7 +102,7 @@ elements:
         
         text: settingsMenu
         
-        onClick: GUIShow\\SettingsMenu
+        onClick: GUIShow(SettingsMenu)
         
       ResetButton:
         position: [-35, -1]
