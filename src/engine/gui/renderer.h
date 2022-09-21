@@ -10,6 +10,7 @@
 class Renderer {
 	public:
 		static void renderElement(UIElement element);
+		static void renderMenu(UIElement menu);
 		static void renderTextRaw(char* text, int x, int y, int centerWidth, int centerHeight);
 		
 		static void renderText(std::string text, int x, int y, int centerWidth, int centerHeight, bool right);

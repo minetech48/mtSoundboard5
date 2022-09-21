@@ -67,7 +67,7 @@ class SBAudio {
 		static ma_engine_config engineConfig;
 		static ma_resource_manager resourceManager;
 		
-		static int engineIndex;
+		static int engineIndex, engineIndex2;
 		static std::unordered_set<ma_sound*> activeSounds;
 		
 		static void initialize();

@@ -10,6 +10,33 @@ static TTF_Font* defaultFont = NULL;
 static SDL_Color currentColor;
 
 
+void Renderer::renderMenu(UIElement menu) {
+	
+	if (menu.containsData("drawBackground")) {
+		int oldBorder = GUIData::borderSize;
+		GUIData::borderSize*= -3;
+		
+		SDL_Rect rect = {
+			menu.position.x,
+			menu.position.y,
+			menu.position2.x - menu.position.x,
+			menu.position2.y - menu.position.y
+		};
+		applyBorder(&rect);
+		
+		setColor("Border");
+		SDL_RenderFillRect(sdl_renderer, &rect);
+		
+		GUIData::borderSize*= -1;
+		applyBorder(&rect);
+		GUIData::borderSize = oldBorder;
+		
+		setColor("Background");
+		SDL_RenderFillRect(sdl_renderer, &rect);
+	}
+	
+	renderElement(menu);
+}
 void Renderer::renderElement(UIElement element) {
 	// printf("Renderer: %s: %d:%d:%d:%d\n",
 	// 	element.metadata["name"].as<std::string>().c_str(),

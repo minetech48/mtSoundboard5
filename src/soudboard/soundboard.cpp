@@ -119,6 +119,8 @@ void Soundboard::GUIReset(EngineEvent event) {
 	boardBindings.clear();
 	soundBindings.clear();
 	
+	SBAudio::stopAll();
+	
 	loadBoards();
 	if (currentBoard != "")
 		loadSounds(currentBoard);

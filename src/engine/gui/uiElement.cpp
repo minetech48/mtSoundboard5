@@ -27,9 +27,9 @@ void UIElement::alignElement(UIElement* parentPtr, UIElement* elementPtr) {
 	
 	
 	//handling 'stretching'
-	if (elementPtr->defSize.x < 0)
+	if (elementPtr->defSize.x <= 0)
 		elementPtr->position2.x = parentSize.x + elementPtr->defSize.x+1 - abs(elementPtr->position.x);
-	if (elementPtr->defSize.y < 0)
+	if (elementPtr->defSize.y <= 0)
 		elementPtr->position2.y = parentSize.y + elementPtr->defSize.y+1 - abs(elementPtr->position.y);
 	
 	//handling right, bottom, and center alignment

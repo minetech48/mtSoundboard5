@@ -3,7 +3,7 @@
 #define MINIAUDIO_IMPLEMENTATION
 #include "miniaudio.h"
 
-int SBAudio::engineIndex;
+int SBAudio::engineIndex, SBAudio::engineIndex2;
 
 ma_engine_config SBAudio::engineConfig;
 ma_resource_manager SBAudio::resourceManager;
@@ -44,14 +44,15 @@ void SBAudio::initialize() {
 	engineConfig = ma_engine_config_init();
 	engineConfig.pResourceManager = &resourceManager;
 	//default audio engine
-	ma_engine *engine = new ma_engine();
-	if (ma_engine_init(&engineConfig, engine) != MA_SUCCESS) {
-		printf("\tFailed to initialize miniaudio engine!\n");
-		return;
-	}
-	playbackEngines.push_back(engine);
+	ma_engine *engine;
+	// engine = new ma_engine();
+	// if (ma_engine_init(NULL, engine) != MA_SUCCESS) {
+	// 	printf("\tFailed to initialize miniaudio engine!\n");
+	// 	return;
+	// }
+	// playbackEngines.push_back(engine);
 	//specific device engines
-	for (int i = 0; i < playbackInfoSize; i++) {
+	for (int i = 0; i < playbackInfoSize; i++) {//todo, init devices, 2 engines
 		printf("\tInitializing engine [%d] - %s\n", i, playbackInfos[i].name);
 		
 		engineConfig.pPlaybackDeviceID = &(playbackInfos[i].id);
@@ -64,7 +65,8 @@ void SBAudio::initialize() {
 		playbackEngines.push_back(engine);
 	}
 	
-	engineIndex = 0;
+	engineIndex = 2;
+	engineIndex2 = 4;
 	
 	printf("\tSuccess!\n");
 }
@@ -92,7 +94,7 @@ void startAudioFile(ma_engine* engine, std::string path) {
 	ma_result result;
 	ma_sound *sound = new ma_sound();
 	
-	result = ma_sound_init_from_file(engine, path.c_str(),
+	result = ma_sound_init_from_file(engine, path.c_str(),//todo: stream only if sound is large
 		 MA_SOUND_FLAG_STREAM | MA_SOUND_FLAG_ASYNC, NULL, NULL, sound);
 	if (result != MA_SUCCESS) {
 		printf("Failed to load sound file, %d: %s\n", result, path.c_str());
@@ -103,8 +105,9 @@ void startAudioFile(ma_engine* engine, std::string path) {
 	ma_sound_start(sound);
 }
 void SBAudio::playSound(std::string path) {
-	startAudioFile(playbackEngines[0], path);
-	
-	if (engineIndex > 0)
+	if (engineIndex > 0 && engineIndex < playbackEngines.size())
 		startAudioFile(playbackEngines[engineIndex], path);
+	
+	if (engineIndex2 > 0 && engineIndex2 < playbackEngines.size() && engineIndex != engineIndex2)
+		startAudioFile(playbackEngines[engineIndex2], path);
 }

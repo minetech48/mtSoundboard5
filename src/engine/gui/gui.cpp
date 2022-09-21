@@ -48,26 +48,32 @@ void GUI::update() {
 	//printf("Mouse position: (%d, %d)\n", mouseX, mouseY);
 	
 	if (clickedElement == NULL) {
-		for (auto const& menu : menus) {
-			UIElement* hovered = getHoveredElement(&menus[menu.first]);
+		UIElement* hovered;
+		
+		for (auto it = menus.begin(); it != menus.end(); it++) {
+			hovered = getHoveredElement(&menus[(*it).first]);
 			
-			if (hovered != focusedElement) {
-				if (focusedElement != NULL)
-					focusedElement->focused = false;
-				
-				focusedElement = hovered;
-				
-				if (focusedElement != NULL)
-					focusedElement->focused = true;
+			if (hovered != NULL)
 				break;
-			}
+		}
+		if ((hovered != NULL && !hovered->isFocusable()))
+			hovered = NULL;
+		
+		if (hovered != focusedElement) {
+			if (focusedElement != NULL)
+				focusedElement->focused = false;
+			
+			focusedElement = hovered;
+			
+			if (focusedElement != NULL)
+				focusedElement->focused = true;
 		}
 	}
 	
 	Renderer::start();
 	
-	for (auto const& menu : menus) {
-		Renderer::renderElement(menu.second);
+	for (auto it = menus.rbegin(); it != menus.rend(); it++) {
+		Renderer::renderMenu((*it).second);
 	}
 	
 	Renderer::finish();
@@ -89,7 +95,7 @@ UIElement* getHoveredElement(UIElement* element) {
 		}
 	}
 	
-	if (toReturn->isFocusable()) {
+	if (toReturn->isFocusable() || toReturn->containsData("drawBackground")) {
 		return toReturn;
 	}
 	return NULL;
@@ -103,6 +109,9 @@ void GUI::handleEvent(EngineEvent event) {
 	switch (hash(event.event)) {
 		case hash("GUIShow"):
 			loadGUI(event.arg1);
+			break;
+		case hash("GUIHide"):
+			menus.erase(event.arg1);
 			break;
 		case (hash("GUISetTheme")):
 			setTheme(event.arg1);
@@ -121,6 +130,8 @@ void GUI::handleEvent(EngineEvent event) {
 //events
 //parsing YAML menu file
 void loadGUI(std::string filePath) {
+	if (GUI::menus.contains(FileIO::getFileName(filePath))) return;
+	
 	YAML::Node ymlRoot = YAML::LoadFile(FileIO::findFile(filePath, ".yml"));
 	
 	// std::string str = yml["elements"]["HelloButton"]["text"].as<std::string>();
@@ -149,8 +160,9 @@ void loadGUI(std::string filePath) {
 			}
 		}
 		
-		if (currentElement->containsData("globalName"))
-			GUIData::elementsMap.insert({currentElement->getDataString("globalName"), currentElement});
+		// if (currentElement->containsData("globalName"))
+		// 	GUIData::elementsMap.insert({currentElement->getDataString("globalName"), currentElement});
+		GUIData::elementsMap.insert({menu.name + "." + currentElement->name, currentElement});
 	}
 }
 
@@ -186,9 +198,16 @@ void loadList(std::string filePath) {
 
 void resetGUI() {
 	GUIData::elementsMap.clear();
+	focusedElement = NULL;
+	clickedElement = NULL;
 	
+	std::vector<std::string> menuNames;
 	for (auto const& child : GUI::menus) {
-		loadGUI(child.second.name);
+		menuNames.push_back(child.second.name);
+	}
+	GUI::menus.clear();
+	for (std::string name : menuNames) {
+		loadGUI(name);
 	}
 	EngineCore::broadcast("GUISetTheme", "gui/theming/DefaultTheme");
 }
