@@ -2,7 +2,7 @@
 
 #include <queue>
 
-const int windowWidth = 1000, windowHeight = 850;
+int windowWidth = 1000, windowHeight = 850;
 
 SDL_Window* GUI::window = NULL;
 
@@ -242,6 +242,21 @@ void windowLoop() {
 				focusedElement->scroll = 0;
 			
 			break;
+		case SDL_WINDOWEVENT:
+			if (event.window.event != SDL_WINDOWEVENT_SIZE_CHANGED) break;
+			
+            // SDL_Log("Window %d resized to %dx%d",
+            //         event.window.windowID, event.window.data1,
+            //         event.window.data2);
+			windowWidth = event.window.data1;
+			windowHeight = event.window.data2;
+			rootElement.position2 = {windowWidth, windowHeight};
+			
+			for (auto it = GUI::menus.rbegin(); it != GUI::menus.rend(); it++) {
+				UIElement::alignElement(&rootElement, &((*it).second));
+			}
+			
+			break;
 		}
 		
 		for (auto funct : GUI::SDLEventHandlers) {
@@ -274,7 +289,8 @@ bool initSDL() {
 	}
 
 	//Creating window
-	GUI::window = SDL_CreateWindow("SDL Test", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, windowWidth, windowHeight, SDL_WINDOW_SHOWN);
+	GUI::window = SDL_CreateWindow("SDL Test", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+				windowWidth, windowHeight, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 	if (GUI::window == NULL) {
 		printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
 		return false;

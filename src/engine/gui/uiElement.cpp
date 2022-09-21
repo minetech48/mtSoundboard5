@@ -7,7 +7,10 @@
 
 void UIElement::alignElement(UIElement* parentPtr, UIElement* elementPtr) {
 	//make containers fill parent if dimensions undefined
-	if (elementPtr->defSize.x == 0) {
+	bool fill = false;
+	if (elementPtr->defSize.x == 0 && elementPtr->defSize.y == 0
+			&& elementPtr->isContainer()) {
+		fill = true;
 		
 		if (parentPtr->isGridContainer())
 			elementPtr->defSize = {1, 1};
@@ -78,6 +81,10 @@ void UIElement::alignElement(UIElement* parentPtr, UIElement* elementPtr) {
 	// 	elementPtr->position2.x,
 	// 	elementPtr->position2.y
 	// );
+	if (fill) {
+		elementPtr->defSize.x = 0;
+		elementPtr->defSize.y = 0;
+	}
 }
 
 void UIElement::click(int clicks) {

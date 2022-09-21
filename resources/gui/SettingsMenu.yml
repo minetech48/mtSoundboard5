@@ -64,7 +64,7 @@ elements:
             
             text: setAudio1
             
-            onClick: SetAudio1\\\$SettingsMenu.audioDeviceList\
+            onClick: SetAudio1(\$SettingsMenu.DeviceList\)
           
           DeviceTextbox2(0, 26, 0, 20):
             position: [0, -25]
@@ -78,8 +78,8 @@ elements:
             
             text: setAudio2
             
-            onClick: SetAudio2\\\$SettingsMenu.audioDeviceList\
-  
+            onClick: SetAudio2(\$SettingsMenu.DeviceList\)
+
   CloseButton:
     position: [-5, 5]
     size: [80, 20]
