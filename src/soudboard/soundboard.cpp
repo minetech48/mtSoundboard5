@@ -8,25 +8,35 @@
 #include <fstream>
 namespace fs = std::filesystem;
 
+const int OPTIONAL_MODIFIER_MASK = (KMOD_CAPS | KMOD_NUM) << 8;
+
 const std::string SOUNDBOARDS_DIR = "resources/soundboards/";
 
 bimap<std::string, int> Soundboard::boardBindings;
 bimap<std::string, int> Soundboard::soundBindings;
+bimap<std::string, int> Soundboard::globalBindings;
 
 std::string Soundboard::currentBoard;
 
 bool Soundboard::boardBinding = false,
-	 Soundboard::soundBinding = false;
+	 Soundboard::soundBinding = false,
+	 Soundboard::globalBinding = false;
 
 
 void Soundboard::initialize() {
 	eventMap.insert({"SBPlaySound", SBPlaySound});
+	eventMap.insert({"SBPlayCurrent", SBPlayCurrent});
 	eventMap.insert({"SBSelectBoard", SBSelectBoard});
 	eventMap.insert({"SBBoardBinding", SBBoardBinding});
 	eventMap.insert({"SBBoardBindingR", SBBoardBindingR});
 	eventMap.insert({"SBSoundBinding", SBSoundBinding});
 	eventMap.insert({"SBSoundBindingR", SBSoundBindingR});
+	eventMap.insert({"SBGlobalBinding", SBGlobalBinding});
+	eventMap.insert({"SBGlobalBindingR", SBGlobalBindingR});
+	eventMap.insert({"SBClearBinding", SBClearBinding});
 	eventMap.insert({"SBStopSounds", SBStopSounds});
+	eventMap.insert({"SetAudio1", SetAudio1});
+	eventMap.insert({"SetAudio2", SetAudio2});
 	
 	eventMap.insert({"GUIReset", GUIReset});
 	eventMap.insert({"Shutdown", Shutdown});
@@ -35,14 +45,18 @@ void Soundboard::initialize() {
 	
 	GUIData::addStringHandler("SBBoardBind", boardStringHandler);
 	GUIData::addStringHandler("SBSoundBind", soundStringHandler);
+	GUIData::addStringHandler("keybindings", keybindingsHandler);
 	
 	loadBoards();
 	
 	printf("Starting audio player:\n");
 	SBAudio::initialize();
 	
+	
 	printf("Starting keyboard hook:\n");
 	KeyboardHook::initialize();
+	
+	loadBindings("resources/config/keybindings" , &globalBindings);
 }
 
 void Soundboard::handleEvent(EngineEvent event) {
@@ -66,24 +80,44 @@ void Soundboard::SDLEventHandler(SDL_Event event) {
 			//hijacking padding2 to determine where keypress originates
 			bool localKey = !event.key.padding2;
 			
-			if (boardBinding) {
+			if (globalBinding) {
+				if (localKey)
+					setBinding(&globalBindings,
+						GUIData::getElement("SettingsMenu.KeybindList")->getReturnValue(), keyCode);
+			}else if (boardBinding) {
 				if (localKey)
 					setBinding(&boardBindings,
 						GUIData::getElement("BoardsList")->getReturnValue(), keyCode);
-				return;
+				break;
 			}else if (soundBinding) {
 				if (localKey)
 					setBinding(&soundBindings,
 						GUIData::getElement("SoundsList")->getReturnValue(), keyCode);
-				return;
+				break;
 			}
-			if (localKey) return;
+			if (localKey) break;
 			
-			if (boardBindings.keysMap.contains(keyCode))
+			if (globalBindings.keysMap.contains(keyCode) && globalBindings.getKey(keyCode) != "PushToTalk")
+				EngineCore::broadcast(globalBindings.getKey(keyCode));
+			else if (boardBindings.keysMap.contains(keyCode))
 				EngineCore::broadcast("SBSelectBoard", boardBindings.getKey(keyCode));
-			else if (soundBindings.keysMap.contains(keyCode))
-				SBAudio::playSound(SOUNDBOARDS_DIR + currentBoard + "/" +
-										 soundBindings.getKey(keyCode));
+			else {
+				#define playsound(key) \
+					if (soundBindings.keysMap.contains(keyCode)) { \
+						SBAudio::playSound(SOUNDBOARDS_DIR + currentBoard + "/" + \
+												soundBindings.getKey(keyCode)); \
+						break; \
+					}
+				playsound(keyCode)//playing sound if it exists
+				keyCode = keyCode & (~OPTIONAL_MODIFIER_MASK);
+				playsound(keyCode)//else, play sound without modifiers
+				keyCode = keyCode | KMOD_CAPS << 8;
+				playsound(keyCode)//testing with caps
+				keyCode = keyCode | KMOD_NUM << 8;
+				playsound(keyCode)//testing with caps and num lock
+				keyCode = keyCode & ~KMOD_CAPS << 8;
+				playsound(keyCode)//testing with num lock
+			}
 			
 			break;
 	}
@@ -101,6 +135,10 @@ void Soundboard::SBPlaySound(EngineEvent event) {
 	//printf("playing sound %s\n", event.arg1.c_str());
 	SBAudio::playSound(SOUNDBOARDS_DIR + currentBoard + "/" + event.arg1);
 }
+void Soundboard::SBPlayCurrent(EngineEvent event) {
+	event.arg1 = GUIData::getElement("Soundboard.SoundsList")->getReturnValue();
+	SBPlaySound(event);
+}
 void Soundboard::SBStopSounds(EngineEvent event) {
 	SBAudio::stopAll();
 }
@@ -113,7 +151,29 @@ void Soundboard::SBSoundBindingR(EngineEvent event) {
 	soundBinding = false;
 	saveBindings(SOUNDBOARDS_DIR + currentBoard + "/SBBind.txt", &soundBindings);
 }
+void Soundboard::SBGlobalBindingR(EngineEvent event) {
+	globalBinding = false;
+	saveBindings("resources/config/keybindings.txt", &globalBindings);
+}
 
+void Soundboard::SBClearBinding(EngineEvent event) {
+	if (GUIData::getElement("Soundboard.SoundsList")->getReturnValue() == "") {
+		boardBindings.removeValue(GUIData::getElement("Soundboard.BoardsList")->getReturnValue());
+		saveBindings(SOUNDBOARDS_DIR + "SBBind.txt", &boardBindings);
+	}else {
+		soundBindings.removeValue(GUIData::getElement("Soundboard.SoundsList")->getReturnValue());
+		saveBindings(SOUNDBOARDS_DIR + currentBoard + "/SBBind.txt", &soundBindings);
+	}
+}
+
+void Soundboard::SetAudio1(EngineEvent event) {
+	SBAudio::engineIndex = GUIData::getElement("SettingsMenu.DeviceList")->listActive;
+	GUIData::setString("AudioDevice1", SBAudio::playbackInfos[SBAudio::engineIndex].name);
+}
+void Soundboard::SetAudio2(EngineEvent event) {
+	SBAudio::engineIndex2 = GUIData::getElement("SettingsMenu.DeviceList")->listActive;
+	GUIData::setString("AudioDevice2", SBAudio::playbackInfos[SBAudio::engineIndex2].name);
+}
 
 void Soundboard::GUIReset(EngineEvent event) {
 	boardBindings.clear();
@@ -133,6 +193,8 @@ void Soundboard::Shutdown(EngineEvent event) {
 		saveBindings(SOUNDBOARDS_DIR + "SBBind.txt", &boardBindings);
 	if (soundBinding)
 		saveBindings(SOUNDBOARDS_DIR + currentBoard + "/SBBind.txt", &soundBindings);
+	if (globalBinding)
+		saveBindings("resources/config/keybindings.txt", &globalBindings);
 }
 
 
@@ -236,4 +298,7 @@ std::string Soundboard::boardStringHandler(std::string str) {
 }
 std::string Soundboard::soundStringHandler(std::string str) {
 	return keyToString(soundBindings.getValue(str));
+}
+std::string Soundboard::keybindingsHandler(std::string str) {
+	return keyToString(globalBindings.getValue(str));
 }

@@ -23,7 +23,7 @@ elements:
             
             listName: keyEventList
             
-            text: \$bind:|ELEMENT|\
+            text: "bind:|ELEMENT|"
             text2: \$keybindings.|ELEMENT|\
           
           KeybindSetButton:
@@ -64,7 +64,7 @@ elements:
             
             text: setAudio1
             
-            onClick: SetAudio1(\$SettingsMenu.DeviceList\)
+            onClick: SetAudio1
           
           DeviceTextbox2(0, 26, 0, 20):
             position: [0, -25]
@@ -78,7 +78,7 @@ elements:
             
             text: setAudio2
             
-            onClick: SetAudio2(\$SettingsMenu.DeviceList\)
+            onClick: SetAudio2
 
   CloseButton:
     position: [-5, 5]

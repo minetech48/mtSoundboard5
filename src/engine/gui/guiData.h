@@ -3,6 +3,7 @@
 #include <SDL_ttf.h>
 #include <yaml-cpp/yaml.h>
 #include <unordered_map>
+#include <unordered_set>
 #include <functional>
 
 struct UIElement;
@@ -17,6 +18,7 @@ class GUIData {
 		static std::unordered_map<std::string, SDL_Color> colors;
 		static std::unordered_map<std::string, TTF_Font*> fonts;
 		static std::unordered_map<std::string, std::vector<std::string>> lists;
+		static std::unordered_set<std::string> loadedLists;
 		
 		static std::unordered_map<std::string, std::string> strings;
 		
@@ -36,7 +38,7 @@ class GUIData {
 		static void setString(std::string key, std::string value);
 		static std::string getString(std::string key);
 		
-		static void addList(std::string key, std::vector<std::string> list);
+		static std::vector<std::string>* addList(std::string key, std::vector<std::string> list);
 		static std::vector<std::string>* getList(std::string key);
 		
 		static std::string convertString(const char* str);

@@ -1,4 +1,5 @@
 #include "soundboard.h"
+#include "engine/gui/guiData.h"
 
 #define MINIAUDIO_IMPLEMENTATION
 #include "miniaudio.h"
@@ -7,6 +8,9 @@ int SBAudio::engineIndex, SBAudio::engineIndex2;
 
 ma_engine_config SBAudio::engineConfig;
 ma_resource_manager SBAudio::resourceManager;
+
+ma_device_info *SBAudio::playbackInfos;
+ma_uint32 SBAudio::playbackInfoSize;
 
 std::vector<ma_engine*> SBAudio::playbackEngines;
 
@@ -22,8 +26,6 @@ void SBAudio::initialize() {
 	}
 	
 	//loading playback devices
-	ma_device_info *playbackInfos;
-	ma_uint32 playbackInfoSize;
 	if (ma_context_get_devices(&context, &playbackInfos,
 						&playbackInfoSize, NULL, NULL) != MA_SUCCESS) {
 		printf("\tFailed to initialize miniaudio playback!\n");
@@ -52,6 +54,7 @@ void SBAudio::initialize() {
 	// }
 	// playbackEngines.push_back(engine);
 	//specific device engines
+	std::vector<std::string> *deviceNames = GUIData::addList("audioDeviceNames", {});
 	for (int i = 0; i < playbackInfoSize; i++) {//todo, init devices, 2 engines
 		printf("\tInitializing engine [%d] - %s\n", i, playbackInfos[i].name);
 		
@@ -63,10 +66,15 @@ void SBAudio::initialize() {
 			return;
 		}
 		playbackEngines.push_back(engine);
+		
+		deviceNames->push_back(playbackInfos[i].name);
 	}
 	
-	engineIndex = 2;
-	engineIndex2 = 4;
+	engineIndex = -1;
+	engineIndex2 = -1;
+	
+	GUIData::setString("AudioDevice1", SBAudio::playbackInfos[SBAudio::engineIndex].name);
+	GUIData::setString("AudioDevice2", SBAudio::playbackInfos[SBAudio::engineIndex2].name);
 	
 	printf("\tSuccess!\n");
 }

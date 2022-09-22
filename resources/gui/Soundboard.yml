@@ -52,7 +52,7 @@ elements:
         
         text: playSound
         
-        onClick: SBPlaySound(\$Soundboard.ListContainer.SoundsContainer.SoundsList\)
+        onClick: SBPlaySound(\$Soundboard.SoundsList\)
         #onClick: SBPlaySound(\$SoundsList\)
       
       StopSounds:

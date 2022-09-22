@@ -28,7 +28,7 @@ clearGUI: Clear
 bind:PushToTalk: Push To Talk
 bind:SBStopSounds: Stop Audio
 bind:SBPlayCurrent: Play Selected
-bind:SBRemoveBinding: Clear Binding
+bind:SBClearBinding: Clear Binding
 bind:SBFixPTTHold: Fix PTT
 bind:SBBack: Directory Return
 

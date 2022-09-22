@@ -50,7 +50,8 @@ struct UIElement {
 	bool isContainer() {return !elements.empty();}
 	bool isGridContainer() {return containsData("gridSize");}
 	
-	int getListElementHeight() {return getDataInteger("elementHeight");}
+	int getListElementHeight() {
+		int height = getDataInteger("elementHeight"); return height==1 ? 20 : height;}
 	int getListElementWidth() {return (position2.x-position.x) / getDataInteger("listWidth");}
 	int getListSelected() {
 		return focused ?

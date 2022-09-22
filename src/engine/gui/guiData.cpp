@@ -10,6 +10,7 @@ std::unordered_map<std::string, UIElement*> GUIData::elementsMap;
 std::unordered_map<std::string, SDL_Color> GUIData::colors;
 std::unordered_map<std::string, TTF_Font*> GUIData::fonts;
 std::unordered_map<std::string, std::vector<std::string>> GUIData::lists;
+std::unordered_set<std::string> GUIData::loadedLists;
 
 std::unordered_map<std::string, std::string> GUIData::strings;
 
@@ -91,6 +92,9 @@ std::string GUIData::convertString(const char* str) {
 	
 	StringReader reader(str);
 	
+	if (elementsMap.contains(str))
+		return elementsMap[str]->getReturnValue();
+	
 	std::string key = reader.advanceTo('.');
 	if (reader.hasNext()) {
 		if (elementsMap.contains(key)) {
@@ -159,13 +163,15 @@ void GUIData::addStringHandler(std::string key, std::function<std::string(std::s
 	stringHandlers.insert({key, func});
 }
 
-void GUIData::addList(std::string key, std::vector<std::string> list) {
+std::vector<std::string>* GUIData::addList(std::string key, std::vector<std::string> list) {
 	if (lists.contains(key)) lists.erase(key);
 	
 	lists.insert({key, list});
+	return &(lists[key]);
 }
 std::vector<std::string>* GUIData::getList(std::string key) {
-	//todo: file loading
+	if (!lists.contains(key) && !loadedLists.contains(key))
+		loadList(key);
 	
-	return &lists[key];
+	return &(lists[key]);
 }

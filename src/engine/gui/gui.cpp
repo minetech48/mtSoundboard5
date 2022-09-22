@@ -16,6 +16,7 @@ UIElement* focusedElement;
 UIElement* clickedElement;
 
 std::map<std::string, UIElement> GUI::menus;
+std::set<UIElement*> activeMenus;
 
 std::vector<std::function<void(SDL_Event)>> GUI::SDLEventHandlers;
 
@@ -50,8 +51,8 @@ void GUI::update() {
 	if (clickedElement == NULL) {
 		UIElement* hovered;
 		
-		for (auto it = menus.begin(); it != menus.end(); it++) {
-			hovered = getHoveredElement(&menus[(*it).first]);
+		for (auto it = activeMenus.rbegin(); it != activeMenus.rend(); it++) {
+			hovered = getHoveredElement(*it);
 			
 			if (hovered != NULL)
 				break;
@@ -72,8 +73,8 @@ void GUI::update() {
 	
 	Renderer::start();
 	
-	for (auto it = menus.rbegin(); it != menus.rend(); it++) {
-		Renderer::renderMenu((*it).second);
+	for (auto it = activeMenus.begin(); it != activeMenus.end(); it++) {
+		Renderer::renderMenu(**it);
 	}
 	
 	Renderer::finish();
@@ -108,10 +109,12 @@ bool isInBounds(UIElement element, int x, int y) {
 void GUI::handleEvent(EngineEvent event) {
 	switch (hash(event.event)) {
 		case hash("GUIShow"):
-			loadGUI(event.arg1);
+			if (!menus.contains(event.arg1))
+				loadGUI(event.arg1);
+			activeMenus.insert(&menus[FileIO::getFileName(event.arg1)]);
 			break;
 		case hash("GUIHide"):
-			menus.erase(event.arg1);
+			activeMenus.erase(&(menus[event.arg1]));
 			break;
 		case (hash("GUISetTheme")):
 			setTheme(event.arg1);
@@ -160,8 +163,8 @@ void loadGUI(std::string filePath) {
 			}
 		}
 		
-		// if (currentElement->containsData("globalName"))
-		// 	GUIData::elementsMap.insert({currentElement->getDataString("globalName"), currentElement});
+		if (currentElement->containsData("globalName"))
+			GUIData::elementsMap.insert({currentElement->getDataString("globalName"), currentElement});
 		GUIData::elementsMap.insert({menu.name + "." + currentElement->name, currentElement});
 	}
 }
@@ -206,9 +209,14 @@ void resetGUI() {
 		menuNames.push_back(child.second.name);
 	}
 	GUI::menus.clear();
+	activeMenus.clear();
 	for (std::string name : menuNames) {
 		loadGUI(name);
 	}
+	
+	GUIData::strings.clear();
+	GUIData::lists.clear();
+	GUIData::loadedLists.clear();
 	EngineCore::broadcast("GUISetTheme", "gui/theming/DefaultTheme");
 }
 
@@ -289,7 +297,7 @@ bool initSDL() {
 	}
 
 	//Creating window
-	GUI::window = SDL_CreateWindow("SDL Test", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+	GUI::window = SDL_CreateWindow("mtSoundboard V5", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 				windowWidth, windowHeight, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 	if (GUI::window == NULL) {
 		printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());

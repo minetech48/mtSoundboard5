@@ -1,8 +1,6 @@
-GUIList
-
-PushToTalk
+~PushToTalk
 SBStopSounds
 SBPlayCurrent
-SBRemoveBinding
-SBFixPTTHold
-SBBack
+SBClearBinding
+~SBFixPTTHold
+~SBBack
