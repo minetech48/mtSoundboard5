@@ -70,8 +70,6 @@ void SBAudio::initialize() {
 		deviceNames->push_back(playbackInfos[i].name);
 	}
 	
-	ma_context_uninit(&context);
-	
 	GUIData::setString("AudioDevice1", SBAudio::playbackInfos[SBAudio::engineIndex].name);
 	GUIData::setString("AudioDevice2", SBAudio::playbackInfos[SBAudio::engineIndex2].name);
 	
@@ -83,6 +81,8 @@ void SBAudio::uninit() {
 		ma_engine_uninit(engine);
 	}
 	playbackEngines.clear();
+	
+	playbackInfos = NULL;
 }
 
 void SBAudio::update() {

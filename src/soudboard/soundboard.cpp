@@ -12,6 +12,7 @@ namespace fs = std::filesystem;
 const int OPTIONAL_MODIFIER_MASK = (KMOD_CAPS | KMOD_NUM) << 8;
 
 const std::string SOUNDBOARDS_DIR = "resources/soundboards/";
+const std::string CONFIG_DIR = "resources/config/";
 
 bimap<std::string, int> Soundboard::boardBindings;
 bimap<std::string, int> Soundboard::soundBindings;
@@ -56,6 +57,8 @@ void Soundboard::initialize() {
 	
 	logf("Starting keyboard hook:\n");
 	KeyboardHook::initialize();
+	
+	loadConfig();
 	
 	loadBindings("resources/config/keybindings" , &globalBindings);
 }
@@ -176,10 +179,12 @@ void Soundboard::SBClearBinding(EngineEvent event) {
 void Soundboard::SetAudio1(EngineEvent event) {
 	SBAudio::engineIndex = GUIData::getElement("SettingsMenu.DeviceList")->listActive;
 	GUIData::setString("AudioDevice1", SBAudio::playbackInfos[SBAudio::engineIndex].name);
+	saveConfig();
 }
 void Soundboard::SetAudio2(EngineEvent event) {
 	SBAudio::engineIndex2 = GUIData::getElement("SettingsMenu.DeviceList")->listActive;
 	GUIData::setString("AudioDevice2", SBAudio::playbackInfos[SBAudio::engineIndex2].name);
+	saveConfig();
 }
 
 void Soundboard::GUIReset(EngineEvent event) {
@@ -276,6 +281,34 @@ void Soundboard::saveBindings(std::string filePath, bimap<std::string, int>* bin
 	for (auto& entry : bindingMap->valuesMap) {
 		file << entry.first + ":" + std::to_string(entry.second) + '\n';
 	}
+	file.close();
+}
+
+void Soundboard::loadConfig() {
+	std::ifstream file(CONFIG_DIR + "audioSettings.txt");
+	
+	if (file.is_open()) {
+		logf("Loading config file.\n");
+		std::string line;
+		
+		std::getline(file, line);
+		SBAudio::engineIndex = std::stoi(line);
+		std::getline(file, line);
+		SBAudio::engineIndex2 = std::stoi(line);
+		
+		GUIData::setString("AudioDevice1", SBAudio::playbackInfos[SBAudio::engineIndex].name);
+		GUIData::setString("AudioDevice2", SBAudio::playbackInfos[SBAudio::engineIndex2].name);
+		
+		file.close();
+	}
+}
+void Soundboard::saveConfig() {
+	std::ofstream file;
+	file.open(CONFIG_DIR + "audioSettings.txt");
+	
+	file << SBAudio::engineIndex << '\n';
+	file << SBAudio::engineIndex2 << '\n';
+	
 	file.close();
 }
 

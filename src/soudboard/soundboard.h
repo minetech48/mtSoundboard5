@@ -67,6 +67,9 @@ class Soundboard : public EngineSystem {
 	
 	static void loadBindings(std::string filePath, bimap<std::string, int>* bindingMap);
 	static void saveBindings(std::string filePath, bimap<std::string, int>* bindingMap);
+	
+	static void loadConfig();
+	static void saveConfig();
 };
 
 
