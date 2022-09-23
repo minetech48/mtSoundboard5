@@ -2,6 +2,7 @@
 #include "keyboardHook.h"
 #include "winkeymap.h"
 #include "soundboard.h"
+#include "engine/logger.h"
 
 #include <iostream>
 #include <queue>
@@ -66,18 +67,18 @@ LRESULT CALLBACK KeyboardCallback(int nCode, WPARAM wParam, LPARAM lParam) {
 #undef modCase
 
 void KeyboardHook::initialize() {
-	printf("\tInitializing for Windows system.\n");
+	logf("\tInitializing for Windows system.\n");
 	
 	modifierMask = 0;
 	
 	//Set Windows global keyboard hook
 	hook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardCallback, NULL, 0);
 	
-	printf("\tSuccessfully initialized Windows keyboard hook!\n");
+	logf("\tSuccessfully initialized Windows keyboard hook!\n");
 }
 void KeyboardHook::pollEvents() {
 	while (!eventQueue.empty()) {
-		//printf("key: %d\n", eventQueue.front().key.keysym.sym);
+		//logf("key: %d\n", eventQueue.front().key.keysym.sym);
 		Soundboard::SDLEventHandler(eventQueue.front());
 		eventQueue.pop();
 	}

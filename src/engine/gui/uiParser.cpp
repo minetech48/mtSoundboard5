@@ -1,6 +1,7 @@
 #include "uiElement.h"
 
 #include "uiParser.h"
+#include "engine/logger.h"
 
 void UIParser::parseUIElement(UIElement* elementPtr, YAML::Node root) {
 	if (root["position"]) elementPtr->defPosition = root["position"].as<vec2i>();
@@ -24,7 +25,7 @@ void UIParser::parseUIElement(UIElement* elementPtr, YAML::Node root) {
 	for (YAML::const_iterator i = root.begin(); i != root.end(); i++) {
 		if (i->IsDefined()) continue;
 		
-		//printf("test:%s\n", i->first.as<std::string>().c_str());
+		//logf("test:%s\n", i->first.as<std::string>().c_str());
 		elementPtr->metadata[i->first.as<std::string>()] = i->second;
 	}
 }
@@ -46,13 +47,13 @@ void UIParser::loadTheme(YAML::Node root) {
 			i->second["fontSize"].as<int>());
 			
 		if (font == NULL) {
-			printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
+			logf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
 			continue;
 		}
 		
 		GUIData::addFont(i->first.as<std::string>(), font);
 		
-		//printf("test: %s : %s\n", i->first.as<std::string>().c_str(), i->second["fontName"].as<std::string>().c_str());
+		//logf("test: %s : %s\n", i->first.as<std::string>().c_str(), i->second["fontName"].as<std::string>().c_str());
 	}
 	
 	for (YAML::const_iterator i = root["Colors"].begin(); i != root["Colors"].end(); i++) {

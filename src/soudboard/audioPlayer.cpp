@@ -1,5 +1,6 @@
 #include "soundboard.h"
 #include "engine/gui/guiData.h"
+#include "engine/logger.h"
 
 #define MINIAUDIO_IMPLEMENTATION
 #include "miniaudio.h"
@@ -22,14 +23,14 @@ void SBAudio::initialize() {
 	//initializing context
 	ma_context context;
 	if (ma_context_init(NULL, 0, NULL, &context) != MA_SUCCESS) {
-		printf("\tFailed to initialize miniaudio context!\n");
+		logf("\tFailed to initialize miniaudio context!\n");
 		return;
 	}
 	
 	//loading playback devices
 	if (ma_context_get_devices(&context, &playbackInfos,
 						&playbackInfoSize, NULL, NULL) != MA_SUCCESS) {
-		printf("\tFailed to initialize miniaudio playback!\n");
+		logf("\tFailed to initialize miniaudio playback!\n");
 		return;
 	}
 	
@@ -38,7 +39,7 @@ void SBAudio::initialize() {
 	ma_resource_manager_config config = ma_resource_manager_config_init();
 	ma_result result = ma_resource_manager_init(&config, &resourceManager);
 	if (result != MA_SUCCESS) {
-		printf("Failed to initialize resource manager, %d\n", result);
+		logf("Failed to initialize resource manager, %d\n", result);
 		return;
 	}
 	
@@ -50,20 +51,20 @@ void SBAudio::initialize() {
 	ma_engine *engine;
 	// engine = new ma_engine();
 	// if (ma_engine_init(NULL, engine) != MA_SUCCESS) {
-	// 	printf("\tFailed to initialize miniaudio engine!\n");
+	// 	logf("\tFailed to initialize miniaudio engine!\n");
 	// 	return;
 	// }
 	// playbackEngines.push_back(engine);
 	//specific device engines
 	std::vector<std::string> *deviceNames = GUIData::addList("audioDeviceNames", {});
 	for (int i = 0; i < playbackInfoSize; i++) {//todo, init devices, 2 engines
-		printf("\tInitializing engine [%d] - %s\n", i, playbackInfos[i].name);
+		logf("\tInitializing engine [%d] - %s\n", i, playbackInfos[i].name);
 		
 		engineConfig.pPlaybackDeviceID = &(playbackInfos[i].id);
 		
 		engine = new ma_engine();
 		if (ma_engine_init(&engineConfig, engine) != MA_SUCCESS) {
-			printf("\tFailed to initialize miniaudio engine!\n");
+			logf("\tFailed to initialize miniaudio engine!\n");
 			return;
 		}
 		playbackEngines.push_back(engine);
@@ -74,7 +75,7 @@ void SBAudio::initialize() {
 	GUIData::setString("AudioDevice1", SBAudio::playbackInfos[SBAudio::engineIndex].name);
 	GUIData::setString("AudioDevice2", SBAudio::playbackInfos[SBAudio::engineIndex2].name);
 	
-	printf("\tSuccess!\n");
+	logf("\tSuccess!\n");
 }
 
 void SBAudio::update() {
@@ -103,7 +104,7 @@ void startAudioFile(ma_engine* engine, std::string path) {
 	result = ma_sound_init_from_file(engine, path.c_str(),//todo: stream only if sound is large
 		 MA_SOUND_FLAG_STREAM | MA_SOUND_FLAG_ASYNC, NULL, NULL, sound);
 	if (result != MA_SUCCESS) {
-		printf("Failed to load sound file, %d: %s\n", result, path.c_str());
+		logf("Failed to load sound file, %d: %s\n", result, path.c_str());
 		return;
 	}
 	
@@ -111,7 +112,8 @@ void startAudioFile(ma_engine* engine, std::string path) {
 	ma_sound_start(sound);
 }
 void SBAudio::playSound(std::string path) {
-	printf("playing sound: %s\n", path.c_str());
+	logf("playing sound: %s\n", path.c_str());
+	
 	if (engineIndex > 0 && engineIndex < playbackEngines.size())
 		startAudioFile(playbackEngines[engineIndex], path);
 	

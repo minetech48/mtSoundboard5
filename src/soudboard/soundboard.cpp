@@ -3,6 +3,7 @@
 #include "engine/gui/gui.h"
 #include "engine/gui/guiData.h"
 #include "engine/util/fileIO.h"
+#include "engine/logger.h"
 #include "keyboardHook.h"
 
 #include <fstream>
@@ -49,11 +50,11 @@ void Soundboard::initialize() {
 	
 	loadBoards();
 	
-	printf("Starting audio player:\n");
+	logf("Starting audio player:\n");
 	SBAudio::initialize();
 	
 	
-	printf("Starting keyboard hook:\n");
+	logf("Starting keyboard hook:\n");
 	KeyboardHook::initialize();
 	
 	loadBindings("resources/config/keybindings" , &globalBindings);
@@ -80,7 +81,7 @@ void Soundboard::SDLEventHandler(SDL_Event event) {
 	switch (event.type) {
 		case SDL_KEYDOWN:
 			int keyCode = event.key.keysym.sym;
-			//printf("SDLKey %d: %d\n", event.key.padding2, keyCode);
+			//logf("SDLKey %d: %d\n", event.key.padding2, keyCode);
 			
 			keyCode = keyCode | (event.key.keysym.mod << 8);
 			//hijacking padding2 to determine where keypress originates
@@ -138,7 +139,7 @@ void Soundboard::SBSelectBoard(EngineEvent event) {
 }
 
 void Soundboard::SBPlaySound(EngineEvent event) {
-	//printf("playing sound %s\n", event.arg1.c_str());
+	//logf("playing sound %s\n", event.arg1.c_str());
 	SBAudio::playSound(SOUNDBOARDS_DIR + currentBoard + "/" + event.arg1);
 }
 void Soundboard::SBPlayCurrent(EngineEvent event) {
@@ -217,7 +218,7 @@ void Soundboard::loadBoards() {
 	for (const auto& dir : fs::directory_iterator(SOUNDBOARDS_DIR)) {
 		if (FileIO::getFileExtention(dir.path().generic_string()) != "") continue;
 		
-		printf("Soundboard directory found: %s\n", dir.path().c_str());
+		logf("Soundboard directory found: %s\n", dir.path().c_str());
 		
 		boardsList->push_back(FileIO::removeFilePath(dir.path().generic_string()));
 	}
@@ -230,7 +231,7 @@ void Soundboard::loadSounds(std::string boardName) {
 	std::vector<std::string>* soundsList = GUIData::getList("sbSounds");
 	
 	for (const auto& dir : fs::directory_iterator(SOUNDBOARDS_DIR + boardName)) {
-		//printf("sound file found: %s\n", dir.path().c_str());
+		//logf("sound file found: %s\n", dir.path().c_str());
 		
 		soundsList->push_back(FileIO::removeFilePath(dir.path().generic_string()));
 	}
@@ -242,7 +243,7 @@ void Soundboard::loadBindings(std::string filePath, bimap<std::string, int>* bin
 	bindingMap->clear();
 	
 	if (file.is_open()) {
-		printf("Loading bindings file: %s.txt\n", filePath.c_str());
+		logf("Loading bindings file: %s.txt\n", filePath.c_str());
 		std::string line;
 		int delimiterIndex;
 		
@@ -258,7 +259,7 @@ void Soundboard::loadBindings(std::string filePath, bimap<std::string, int>* bin
 		
 		file.close();
 	}else{
-		printf("No binding file found: %s.txt\n", filePath.c_str());
+		logf("No binding file found: %s.txt\n", filePath.c_str());
 	}
 }
 

@@ -1,4 +1,5 @@
 #include "gui.h"
+#include "engine/logger.h"
 
 #include <queue>
 #include <stack>
@@ -47,7 +48,7 @@ void GUI::update() {
 	
 	SDL_GetMouseState(&GUIData::mouseX, &GUIData::mouseY);
 	
-	//printf("Mouse position: (%d, %d)\n", mouseX, mouseY);
+	//logf("Mouse position: (%d, %d)\n", mouseX, mouseY);
 	
 	if (clickedElement == NULL) {
 		UIElement* hovered = NULL;
@@ -139,11 +140,11 @@ void loadGUI(std::string filePath) {
 	YAML::Node ymlRoot = YAML::LoadFile(FileIO::findFile(filePath, ".yml"));
 	
 	// std::string str = yml["elements"]["HelloButton"]["text"].as<std::string>();
-	// printf("%s \n", str.c_str());
+	// logf("%s \n", str.c_str());
 	
 	UIElement menu = UIParser::parseUIElement(ymlRoot);
 	menu.name = FileIO::getFileName(filePath);
-	//printf("menuname: %s\n", menu.name.c_str());
+	//logf("menuname: %s\n", menu.name.c_str());
 	
 	UIElement::alignElement(&rootElement, &menu);
 	
@@ -183,7 +184,7 @@ void loadList(std::string filePath) {
 	std::ifstream file(FileIO::findFile(filePath, ".txt"));
 	std::string listName = FileIO::getFileName(filePath);
 	
-	printf("Loading list: \"%s\" from \"%s\"\n", 
+	logf("Loading list: \"%s\" from \"%s\"\n", 
 		listName.c_str(), 
 		FileIO::findFile(filePath, ".txt").c_str());
 	
@@ -282,19 +283,19 @@ void GUI::addSDLEventHandler(std::function<void(SDL_Event)> function) {
 bool initSDL() {
 	//Initializing SDL
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-		printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+		logf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
 		return false;
 	}
 	
 	if(TTF_Init() == -1) {
-		printf( "SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError() );
+		logf( "SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError() );
 		return false;
 	}
 
 	//Initializing SDL IMG
 	int imgFlags = IMG_INIT_PNG;
 	if (!(IMG_Init(imgFlags) & imgFlags)) {
-		printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
+		logf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
 		return false;
 	}
 
@@ -302,14 +303,14 @@ bool initSDL() {
 	GUI::window = SDL_CreateWindow("mtSoundboard V5", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 				windowWidth, windowHeight, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 	if (GUI::window == NULL) {
-		printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
+		logf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
 		return false;
 	}
 	//windowSurface = SDL_GetWindowSurface(window);
 	
     SDL_Renderer* gRenderer = SDL_CreateRenderer( GUI::window, -1, SDL_RENDERER_ACCELERATED );
 	if (gRenderer == NULL) {
-		printf("Failed to create renderer: %s\n", SDL_GetError());
+		logf("Failed to create renderer: %s\n", SDL_GetError());
 		return false;
 	}
 	Renderer::setRenderer(gRenderer);
@@ -317,10 +318,10 @@ bool initSDL() {
 	//temp
 	// TTF_Font* font = TTF_OpenFont("resources/FreeMono.ttf", 22);
 	// if (font == NULL) {
-	// 	printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
+	// 	logf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
 	// 	return false;
 	// }
-	// printf("Font loading success!\n");
+	// logf("Font loading success!\n");
 	
 	// Renderer::addFont("primary", font);
 
@@ -330,13 +331,13 @@ bool initSDL() {
 bool loadMedia() {
 	testImage = SDL_LoadBMP("resources/Hello World.bmp");
 	if (testImage == NULL) {
-		printf("Unable to load image! SDL Error: %s\n", SDL_GetError());
+		logf("Unable to load image! SDL Error: %s\n", SDL_GetError());
 		return false;
 	}
 		
 	testImage2 = IMG_Load("resources/Hello World.png");
 	if (testImage2 == NULL) {
-		printf("Unable to load image! SDL Error: %s\n", IMG_GetError());
+		logf("Unable to load image! SDL Error: %s\n", IMG_GetError());
 		return false;
 	}
 	

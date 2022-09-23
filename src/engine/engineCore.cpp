@@ -4,6 +4,7 @@
 #include <thread>
 
 #include "util/stringReader.h"
+#include "engine/logger.h"
 
 std::vector<EngineSystem*> systems;
 std::queue<EngineEvent> eventQueue;
@@ -29,13 +30,13 @@ void EngineCore::broadcast(std::string eventTitle) {
 
 //initializing systems
 void EngineCore::initSystem(EngineSystem* system) {
-	printf("Engine//Initializing System...\n");
+	logf("Engine//Initializing System...\n");
 	
-	printf("--System %s Initializing\n", system->title.c_str());
+	logf("--System %s Initializing\n", system->title.c_str());
 	
 	system->initialize();
 	
-	printf("--System %s Initialized.\n", system->title.c_str());
+	logf("--System %s Initialized.\n", system->title.c_str());
 	
 	systems.push_back(system);
 }
@@ -81,8 +82,8 @@ void EngineCore::runLoop() {
 void EngineCore::processEvents() {
 		while (!eventQueue.empty()) {
 			EngineEvent event = eventQueue.front();
-			//printf("Event: %s\n", event.event.c_str());
-			printf("%s\n", event.toString().c_str());
+			//logf("Event: %s\n", event.event.c_str());
+			logf("%s\n", event.toString().c_str());
 			
 			for (EngineSystem* system : systems) {
 				system->handleEvent(event);

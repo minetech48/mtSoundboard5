@@ -1,4 +1,5 @@
 #include "renderer.h"
+#include "engine/logger.h"
 
 #include <regex>
 
@@ -38,7 +39,7 @@ void Renderer::renderMenu(UIElement menu) {
 	renderElement(menu);
 }
 void Renderer::renderElement(UIElement element) {
-	// printf("Renderer: %s: %d:%d:%d:%d\n",
+	// logf("Renderer: %s: %d:%d:%d:%d\n",
 	// 	element.metadata["name"].as<std::string>().c_str(),
 	// 	element.position.x,
 	// 	element.position.y,
@@ -215,7 +216,7 @@ void Renderer::drawList(UIElement element) {
 
 
 void Renderer::renderTextRaw(char* text, int x, int y, int centerWidth, int centerHeight) {
-	//printf("text: %s\n", text.c_str());
+	//logf("text: %s\n", text.c_str());
 	if (text[0] == 0) return;
 	
 	SDL_Surface* textSurface = TTF_RenderText_Solid(
@@ -224,7 +225,7 @@ void Renderer::renderTextRaw(char* text, int x, int y, int centerWidth, int cent
 		currentColor);
 	
 	if(textSurface == NULL) {
-		printf("Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError());
+		logf("Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError());
 		return;
 	}
 	

@@ -1,4 +1,5 @@
 #include "uiElement.h"
+#include "engine/logger.h"
 
 #include <regex>
 #include <chrono>
@@ -74,7 +75,7 @@ void UIElement::alignElement(UIElement* parentPtr, UIElement* elementPtr) {
 		}
 	}
 	
-	// printf("Element Alignment: %s: %d:%d:%d:%d\n",
+	// logf("Element Alignment: %s: %d:%d:%d:%d\n",
 	// 	elementPtr->metadata["name"].as<std::string>().c_str(),
 	// 	elementPtr->position.x,
 	// 	elementPtr->position.y,

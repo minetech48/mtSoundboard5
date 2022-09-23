@@ -3,6 +3,7 @@
 #include "engine/gui/gui.h"
 #include "soundboard.h"
 #include "xkeymap.h"
+#include "engine/logger.h"
 #include <iostream>
 
 #include <X11/Xlib.h>
@@ -20,11 +21,11 @@ XEvent event;
 static int modifierMask;
 
 void KeyboardHook::initialize() {
-	printf("\tInitializing for Unix system.\n");
+	logf("\tInitializing for Unix system.\n");
 	
 	xdisplay = XOpenDisplay(std::getenv("DISPLAY"));//getting root of current main display
 	if (xdisplay == NULL) {
-		printf("Failed to find X display, key hook stopping!");
+		logf("Failed to find X display, key hook stopping!");
 	}
 	
 	
@@ -42,7 +43,7 @@ void KeyboardHook::initialize() {
 	XSync(xdisplay, 0);
 	free(mask.mask);
 	
-	printf("\tSuccessfully initialized XInput2 keyboard hook!\n");
+	logf("\tSuccessfully initialized XInput2 keyboard hook!\n");
 }
 
 void KeyboardHook::uninitialize() {}
@@ -70,7 +71,7 @@ void KeyboardHook::pollEvents() {
         int xkey = eventData->detail;
 		int keycode = XKeyToSDLKey(xkey);
 		
-		//printf("xkey: %d\n", keycode);
+		//logf("xkey: %d\n", keycode);
 		switch (keycode) {//binding modifiers to keypresses
 			modCase(SDLK_LSHIFT, KMOD_LSHIFT)
 			modCase(SDLK_RSHIFT, KMOD_RSHIFT)

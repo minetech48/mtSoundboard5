@@ -5,6 +5,8 @@
 #include <engine/gui/gui.h>
 #include <soudboard/soundboard.h>
 
+#include "engine/logger.h"
+
 /*
 	Todo:
 		GUI Lists: auto load list file
@@ -18,6 +20,8 @@
 
 
 int main(int argc, char* args[]) {
+	Logger::init();
+	
 	EngineCore::initSystem(new GUI());
 	EngineCore::initSystem(new Soundboard());
 	
