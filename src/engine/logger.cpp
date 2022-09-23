@@ -3,6 +3,7 @@
 #include <iostream>
 #include <chrono>
 #include <ctime>
+#include <stdarg.h>
 
 FILE* outFile;
 
