@@ -50,6 +50,7 @@ class Soundboard : public EngineSystem {
 		static void GUIReset(EngineEvent event);
 		static void Shutdown(EngineEvent event);
 
+	static void SDLEventInput(SDL_Event event);
 	static void SDLEventHandler(SDL_Event event);
 	
 	static std::string boardStringHandler(std::string str);

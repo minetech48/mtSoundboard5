@@ -45,6 +45,8 @@ void KeyboardHook::initialize() {
 	printf("\tSuccessfully initialized XInput2 keyboard hook!\n");
 }
 
+void KeyboardHook::uninitialize() {}
+
 #define modCase(xkey, SDL_Mask) \
 	case (xkey):\
 		modifierMask^= SDL_Mask;\

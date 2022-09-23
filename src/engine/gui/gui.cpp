@@ -1,6 +1,7 @@
 #include "gui.h"
 
 #include <queue>
+#include <stack>
 
 int windowWidth = 1000, windowHeight = 850;
 
@@ -49,7 +50,7 @@ void GUI::update() {
 	//printf("Mouse position: (%d, %d)\n", mouseX, mouseY);
 	
 	if (clickedElement == NULL) {
-		UIElement* hovered;
+		UIElement* hovered = NULL;
 		
 		for (auto it = activeMenus.rbegin(); it != activeMenus.rend(); it++) {
 			hovered = getHoveredElement(*it);
@@ -204,14 +205,15 @@ void resetGUI() {
 	focusedElement = NULL;
 	clickedElement = NULL;
 	
-	std::vector<std::string> menuNames;
+	std::stack<std::string> menuNames;
 	for (auto const& child : GUI::menus) {
-		menuNames.push_back(child.second.name);
+		menuNames.push(child.second.name);
 	}
 	GUI::menus.clear();
 	activeMenus.clear();
-	for (std::string name : menuNames) {
-		loadGUI(name);
+	while (!menuNames.empty()) {
+		EngineCore::broadcast("GUIShow", menuNames.top());
+		menuNames.pop();
 	}
 	
 	GUIData::strings.clear();

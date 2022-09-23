@@ -41,7 +41,7 @@ void Soundboard::initialize() {
 	eventMap.insert({"GUIReset", GUIReset});
 	eventMap.insert({"Shutdown", Shutdown});
 	
-	GUI::addSDLEventHandler(SDLEventHandler);
+	GUI::addSDLEventHandler(SDLEventInput);
 	
 	GUIData::addStringHandler("SBBoardBind", boardStringHandler);
 	GUIData::addStringHandler("SBSoundBind", soundStringHandler);
@@ -70,11 +70,17 @@ void Soundboard::update() {
 	SBAudio::update();
 }
 
+void Soundboard::SDLEventInput(SDL_Event event) {
+	if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
+		event.key.padding2 = 0;//hijacking padding2 to determine where keypress originates
+	SDLEventHandler(event);
+}
 void Soundboard::SDLEventHandler(SDL_Event event) {
 	
 	switch (event.type) {
 		case SDL_KEYDOWN:
 			int keyCode = event.key.keysym.sym;
+			//printf("SDLKey %d: %d\n", event.key.padding2, keyCode);
 			
 			keyCode = keyCode | (event.key.keysym.mod << 8);
 			//hijacking padding2 to determine where keypress originates
@@ -185,7 +191,10 @@ void Soundboard::GUIReset(EngineEvent event) {
 	if (currentBoard != "")
 		loadSounds(currentBoard);
 	
+	KeyboardHook::uninitialize();
 	KeyboardHook::initialize();
+
+	SBAudio::initialize();
 }
 
 void Soundboard::Shutdown(EngineEvent event) {
@@ -195,6 +204,8 @@ void Soundboard::Shutdown(EngineEvent event) {
 		saveBindings(SOUNDBOARDS_DIR + currentBoard + "/SBBind.txt", &soundBindings);
 	if (globalBinding)
 		saveBindings("resources/config/keybindings.txt", &globalBindings);
+	
+	KeyboardHook::uninitialize();
 }
 
 

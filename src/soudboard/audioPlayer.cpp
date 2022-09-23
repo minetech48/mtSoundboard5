@@ -4,7 +4,7 @@
 #define MINIAUDIO_IMPLEMENTATION
 #include "miniaudio.h"
 
-int SBAudio::engineIndex, SBAudio::engineIndex2;
+int SBAudio::engineIndex = 0, SBAudio::engineIndex2 = 0;
 
 ma_engine_config SBAudio::engineConfig;
 ma_resource_manager SBAudio::resourceManager;
@@ -17,7 +17,8 @@ std::vector<ma_engine*> SBAudio::playbackEngines;
 std::unordered_set<ma_sound*> SBAudio::activeSounds;
 
 void SBAudio::initialize() {
-	
+	playbackEngines.clear();
+
 	//initializing context
 	ma_context context;
 	if (ma_context_init(NULL, 0, NULL, &context) != MA_SUCCESS) {
@@ -70,9 +71,6 @@ void SBAudio::initialize() {
 		deviceNames->push_back(playbackInfos[i].name);
 	}
 	
-	engineIndex = -1;
-	engineIndex2 = -1;
-	
 	GUIData::setString("AudioDevice1", SBAudio::playbackInfos[SBAudio::engineIndex].name);
 	GUIData::setString("AudioDevice2", SBAudio::playbackInfos[SBAudio::engineIndex2].name);
 	
@@ -113,6 +111,7 @@ void startAudioFile(ma_engine* engine, std::string path) {
 	ma_sound_start(sound);
 }
 void SBAudio::playSound(std::string path) {
+	printf("playing sound: %s\n", path.c_str());
 	if (engineIndex > 0 && engineIndex < playbackEngines.size())
 		startAudioFile(playbackEngines[engineIndex], path);
 	

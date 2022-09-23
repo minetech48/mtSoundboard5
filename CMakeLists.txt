@@ -35,14 +35,27 @@ file(GLOB_RECURSE main_sources
 
 add_executable(${PROJECT_NAME} ${main_sources})
 
-target_link_libraries(${PROJECT_NAME}
-	SDL2::SDL2 
-	SDL2::SDL2main
-	SDL2::SDL2-static
-	SDL2::SDL2_image
-	
-	yaml-cpp
-	
-	$<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,SDL2_ttf::SDL2_ttf,SDL2_ttf::SDL2_ttf-static>
-	
-)
+if(UNIX)
+	target_link_libraries(${PROJECT_NAME}
+		SDL2::SDL2
+		SDL2::SDL2main
+		SDL2::SDL2-static
+		SDL2::SDL2_image
+		
+		yaml-cpp
+		
+		$<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,SDL2_ttf::SDL2_ttf,SDL2_ttf::SDL2_ttf-static>
+		
+	)
+else()
+	target_link_libraries(${PROJECT_NAME}
+		SDL2::SDL2
+		SDL2::SDL2main
+		SDL2::SDL2_image
+		
+		yaml-cpp
+		
+		$<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,SDL2_ttf::SDL2_ttf,SDL2_ttf::SDL2_ttf-static>
+		
+	)
+endif()
