@@ -85,6 +85,7 @@ class SBAudio {
 		static std::unordered_set<ma_sound*> activeSounds;
 		
 		static void initialize();
+		static void uninit();
 		
 		static void update();
 		

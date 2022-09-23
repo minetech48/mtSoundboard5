@@ -194,7 +194,8 @@ void Soundboard::GUIReset(EngineEvent event) {
 	
 	KeyboardHook::uninitialize();
 	KeyboardHook::initialize();
-
+	
+	SBAudio::uninit();
 	SBAudio::initialize();
 }
 
@@ -207,6 +208,7 @@ void Soundboard::Shutdown(EngineEvent event) {
 		saveBindings("resources/config/keybindings.txt", &globalBindings);
 	
 	KeyboardHook::uninitialize();
+	SBAudio::uninit();
 }
 
 

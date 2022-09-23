@@ -18,8 +18,6 @@ std::vector<ma_engine*> SBAudio::playbackEngines;
 std::unordered_set<ma_sound*> SBAudio::activeSounds;
 
 void SBAudio::initialize() {
-	playbackEngines.clear();
-
 	//initializing context
 	ma_context context;
 	if (ma_context_init(NULL, 0, NULL, &context) != MA_SUCCESS) {
@@ -72,10 +70,19 @@ void SBAudio::initialize() {
 		deviceNames->push_back(playbackInfos[i].name);
 	}
 	
+	ma_context_uninit(&context);
+	
 	GUIData::setString("AudioDevice1", SBAudio::playbackInfos[SBAudio::engineIndex].name);
 	GUIData::setString("AudioDevice2", SBAudio::playbackInfos[SBAudio::engineIndex2].name);
 	
 	logf("\tSuccess!\n");
+}
+
+void SBAudio::uninit() {
+	for (ma_engine *engine : playbackEngines) {
+		ma_engine_uninit(engine);
+	}
+	playbackEngines.clear();
 }
 
 void SBAudio::update() {

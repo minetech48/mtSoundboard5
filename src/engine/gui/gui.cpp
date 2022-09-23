@@ -18,7 +18,7 @@ UIElement* focusedElement;
 UIElement* clickedElement;
 
 std::map<std::string, UIElement> GUI::menus;
-std::set<UIElement*> activeMenus;
+std::map<std::string, UIElement*> activeMenus;
 
 std::vector<std::function<void(SDL_Event)>> GUI::SDLEventHandlers;
 
@@ -53,8 +53,8 @@ void GUI::update() {
 	if (clickedElement == NULL) {
 		UIElement* hovered = NULL;
 		
-		for (auto it = activeMenus.rbegin(); it != activeMenus.rend(); it++) {
-			hovered = getHoveredElement(*it);
+		for (auto it = activeMenus.begin(); it != activeMenus.end(); it++) {
+			hovered = getHoveredElement((*it).second);
 			
 			if (hovered != NULL)
 				break;
@@ -75,8 +75,8 @@ void GUI::update() {
 	
 	Renderer::start();
 	
-	for (auto it = activeMenus.begin(); it != activeMenus.end(); it++) {
-		Renderer::renderMenu(**it);
+	for (auto it = activeMenus.rbegin(); it != activeMenus.rend(); it++) {
+		Renderer::renderMenu(*(*it).second);
 	}
 	
 	Renderer::finish();
@@ -109,14 +109,18 @@ bool isInBounds(UIElement element, int x, int y) {
 }
 
 void GUI::handleEvent(EngineEvent event) {
+	std::string menuName;
+	
 	switch (hash(event.event)) {
 		case hash("GUIShow"):
 			if (!menus.contains(event.arg1))
 				loadGUI(event.arg1);
-			activeMenus.insert(&menus[FileIO::getFileName(event.arg1)]);
+				
+			menuName = FileIO::getFileName(event.arg1);
+			activeMenus.insert({menuName, &menus[menuName]});
 			break;
 		case hash("GUIHide"):
-			activeMenus.erase(&(menus[event.arg1]));
+			activeMenus.erase(FileIO::getFileName(event.arg1));
 			break;
 		case (hash("GUISetTheme")):
 			setTheme(event.arg1);
