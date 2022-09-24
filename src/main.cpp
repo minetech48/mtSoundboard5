@@ -26,7 +26,6 @@ int main(int argc, char* args[]) {
 	EngineCore::initSystem(new Soundboard());
 	
 	EngineCore::broadcast("GUISetTheme", "gui/theming/DefaultTheme");
-	EngineCore::broadcast("GUILoadList", "lists/testList");
 	EngineCore::broadcast("GUIShow", "gui/Soundboard");
 	
 	EngineCore::start();

@@ -218,6 +218,9 @@ void Soundboard::Shutdown(EngineEvent event) {
 
 
 void Soundboard::loadBoards() {
+	if (!fs::exists(SOUNDBOARDS_DIR))
+		return;
+	
 	GUIData::addList("sbBoards", {});
 	
 	std::vector<std::string>* boardsList = GUIData::getList("sbBoards");
@@ -230,9 +233,17 @@ void Soundboard::loadBoards() {
 		boardsList->push_back(FileIO::removeFilePath(dir.path().generic_string()));
 	}
 	loadBindings(SOUNDBOARDS_DIR + "SBBind", &boardBindings);
+	
+	if (boardsList->size() == 0)
+		GUIData::lists.erase("sbBoards");
 }
 
 void Soundboard::loadSounds(std::string boardName) {
+	if (!fs::exists(boardName)) {
+		GUIData::getElement("Soundboard.BoardsList")->listActive = -1;
+		return;
+	}
+	
 	GUIData::addList("sbSounds", {});
 	
 	std::vector<std::string>* soundsList = GUIData::getList("sbSounds");
