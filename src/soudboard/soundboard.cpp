@@ -239,7 +239,7 @@ void Soundboard::loadBoards() {
 }
 
 void Soundboard::loadSounds(std::string boardName) {
-	if (!fs::exists(boardName)) {
+	if (!fs::exists(SOUNDBOARDS_DIR + boardName)) {
 		GUIData::getElement("Soundboard.BoardsList")->listActive = -1;
 		return;
 	}
