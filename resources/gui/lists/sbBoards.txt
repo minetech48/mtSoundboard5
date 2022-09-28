@@ -1,0 +1,6 @@
+No soundboards found!
+To create a soundboard:
+  Create a folder in
+    <resources/soundboards>
+  Then, place audio files inside
+  that directory.

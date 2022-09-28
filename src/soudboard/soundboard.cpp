@@ -80,9 +80,8 @@ void Soundboard::SDLEventInput(SDL_Event event) {
 	SDLEventHandler(event);
 }
 void Soundboard::SDLEventHandler(SDL_Event event) {
-	
 	switch (event.type) {
-		case SDL_KEYDOWN:
+		case SDL_KEYDOWN:{
 			int keyCode = event.key.keysym.sym;
 			//logf("SDLKey %d: %d\n", event.key.padding2, keyCode);
 			
@@ -129,6 +128,20 @@ void Soundboard::SDLEventHandler(SDL_Event event) {
 				playsound(keyCode)//testing with num lock
 			}
 			
+			}break;
+		case SDL_DROPFILE:
+			logf("File: \"%s\" dropped, attempting to copy to selected soundboard directory: \"%s\"\n",
+					event.drop.file, (SOUNDBOARDS_DIR + currentBoard).c_str());
+			
+			if (currentBoard != "" && std::filesystem::exists(SOUNDBOARDS_DIR + currentBoard)) {
+				std::filesystem::copy(event.drop.file, (SOUNDBOARDS_DIR + currentBoard).c_str());
+				GUIData::getList("sbSounds")
+						->push_back(FileIO::removeFilePath(event.drop.file));
+				
+				logf("Copy successful!\n");
+			}else{
+				logf("Failed to copy file!");
+			}
 			break;
 	}
 }
@@ -139,6 +152,10 @@ void Soundboard::SBSelectBoard(EngineEvent event) {
 	
 	currentBoard = event.arg1;
 	loadSounds(event.arg1);
+	
+	UIElement *soundsList = GUIData::getElement("Soundboard.SoundsList");
+	soundsList->scroll = 0;
+	soundsList->listActive = -1;
 }
 
 void Soundboard::SBPlaySound(EngineEvent event) {
@@ -296,7 +313,7 @@ void Soundboard::saveBindings(std::string filePath, bimap<std::string, int>* bin
 }
 
 void Soundboard::loadConfig() {
-	std::ifstream file(CONFIG_DIR + "audioSettings.txt");
+	std::ifstream file(CONFIG_DIR + "SBConfig.txt");
 	
 	if (file.is_open()) {
 		logf("Loading config file.\n");
@@ -315,7 +332,7 @@ void Soundboard::loadConfig() {
 }
 void Soundboard::saveConfig() {
 	std::ofstream file;
-	file.open(CONFIG_DIR + "audioSettings.txt");
+	file.open(CONFIG_DIR + "SBConfig.txt");
 	
 	file << SBAudio::engineIndex << '\n';
 	file << SBAudio::engineIndex2 << '\n';
