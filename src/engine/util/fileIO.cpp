@@ -19,6 +19,7 @@ std::string FileIO::findFile(std::string fileName, std::string extension) {
 			break;
 			
 		case hash(".txt"):
+			checkFile("resources/config/" + fileName);
 			checkFile("resources/gui/" + fileName);
 			checkFile("resources/gui/lists/" + fileName);
 			break;
