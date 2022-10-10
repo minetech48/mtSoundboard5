@@ -2,7 +2,7 @@
 
 #include <engine/engineCore.h>
 #include <engine/gui/gui.h>
-#include <soudboard/soundboard.h>
+#include <soundboard/soundboard.h>
 
 #include "engine/logger.h"
 
