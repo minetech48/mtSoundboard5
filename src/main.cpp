@@ -1,4 +1,3 @@
-#include "main.h"
 #include <stdio.h>
 
 #include <engine/engineCore.h>
@@ -7,21 +6,11 @@
 
 #include "engine/logger.h"
 
-/*
-	Todo:
-		GUI Lists: auto load list file
-		GUI: init script (lua?)
-		GUI: system fonts
-		
-		SB: audio playback
-		SB: Windows keyboard hook
-		SB: ensure .mp3 and .ogg files can be played
-*/
-
-
 int main(int argc, char* args[]) {
 	Logger::init();
 	
+
+	GUI::WINDOW_NAME = "mtSoundboard V5";
 	EngineCore::initSystem(new GUI());
 	EngineCore::initSystem(new Soundboard());
 	

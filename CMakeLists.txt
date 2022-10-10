@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.11)
-project(main)
+project(mtSoundboard)
 
 # Generate compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -11,11 +11,9 @@ set(CMAKE_CXX_STANDARD 23)
 #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
 
 # find libs
-find_package(SDL2 CONFIG REQUIRED)
-find_package(sdl2-image CONFIG REQUIRED)
-find_package(SDL2_ttf CONFIG REQUIRED)
-find_package(yaml-cpp CONFIG REQUIRED)
+add_subdirectory(../mtEngine3 mtEngine3)
 
+# find_package(mtEngine3 CONFIG REQUIRED)
 
 # Include any headers and c files to add to the executable
 include_directories(
@@ -26,36 +24,16 @@ link_directories(
 	${PROJECT_SOURCE_DIR}/src
 )
 
-file(GLOB_RECURSE main_sources
+file(GLOB_RECURSE soundboard_sources
 	${PROJECT_SOURCE_DIR}/src/*.h
 	${PROJECT_SOURCE_DIR}/src/*.hpp
 	${PROJECT_SOURCE_DIR}/src/*.c
 	${PROJECT_SOURCE_DIR}/src/*.cpp
 )
 
-add_executable(${PROJECT_NAME} ${main_sources})
+add_executable(${PROJECT_NAME} ${soundboard_sources} ${engine_sources})
 
-if(UNIX)
-	target_link_libraries(${PROJECT_NAME}
-		SDL2::SDL2
-		SDL2::SDL2main
-		SDL2::SDL2-static
-		SDL2::SDL2_image
-		
-		yaml-cpp
-		
-		$<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,SDL2_ttf::SDL2_ttf,SDL2_ttf::SDL2_ttf-static>
-		
-	)
-else()
-	target_link_libraries(${PROJECT_NAME}
-		SDL2::SDL2
-		SDL2::SDL2main
-		SDL2::SDL2_image
-		
-		yaml-cpp
-		
-		$<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,SDL2_ttf::SDL2_ttf,SDL2_ttf::SDL2_ttf-static>
-		
-	)
-endif()
+target_include_directories(${PROJECT_NAME} PUBLIC ${engine_sources})
+target_link_libraries(${PROJECT_NAME} PRIVATE
+	mtEngine3
+)

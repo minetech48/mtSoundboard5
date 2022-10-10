@@ -2,9 +2,9 @@
 
 #include <string>
 
-#include "../engine/engineSystem.h"
-#include "../engine/engineEvent.h"
-#include "../engine/util/bimap.h"
+#include "engine/engineSystem.h"
+#include "engine/engineEvent.h"
+#include "engine/util/bimap.h"
 #include "engine/util/configHandler.h"
 
 #include <functional>
