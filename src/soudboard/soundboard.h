@@ -5,6 +5,7 @@
 #include "../engine/engineSystem.h"
 #include "../engine/engineEvent.h"
 #include "../engine/util/bimap.h"
+#include "engine/util/configHandler.h"
 
 #include <functional>
 #include <map>
@@ -22,6 +23,8 @@ class Soundboard : public EngineSystem {
 	static std::string currentBoard;
 	
 	static bool boardBinding, soundBinding, globalBinding;
+	
+	static ConfigFile *config;
 	
 	public:
 		Soundboard() {title = "Soundboard";}
@@ -46,6 +49,8 @@ class Soundboard : public EngineSystem {
 		
 		static void SetAudio1(EngineEvent event);
 		static void SetAudio2(EngineEvent event);
+		
+		static void SBConfigSet(EngineEvent event);
 		
 		static void GUIReset(EngineEvent event);
 		static void Shutdown(EngineEvent event);

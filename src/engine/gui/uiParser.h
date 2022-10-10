@@ -7,8 +7,11 @@
 #include "renderer.h"
 #include "guiData.h"
 #include "../util/fileIO.h"
+#include "engine/util/configHandler.h"
 
 class UIParser {
+	static ConfigFile *globalConfig;
+	
 	public:
 		static void parseUIElement(UIElement* elementPtr, YAML::Node root);
 		static UIElement parseUIElement(YAML::Node root);

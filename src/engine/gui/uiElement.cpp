@@ -109,18 +109,32 @@ void UIElement::click(int clicks) {
 		
 	}
 	
-	if (isSwitch() && active) {
-		EngineCore::broadcast(action+"R");
+	if ((isToggleButton() || isSwitch()) && active) {
+		if (isToggleButton())
+			EngineCore::broadcast(action+"R");
+		else if (isSwitch()) {
+			*(bool*) bindPtr = false;
+			
+			if (isButton()) {
+				EngineCore::broadcast(action);
+			}
+		}
+		
 		active = false;
 	}else{
-		EngineCore::broadcast(action);
+		if (isSwitch())
+			*(bool*) bindPtr = true;
+		
+		if (isButton())
+			EngineCore::broadcast(action);
+		
 		active = true;
 	}
 }
 void UIElement::unclick() {
 	if (!isButton()) return;
 	
-	if (!isSwitch())
+	if (!isToggleButton() && !isSwitch())
 		active = false;
 		
 	if (isList() && getDataString("listMode") == "single")

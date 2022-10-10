@@ -24,6 +24,7 @@ bool Soundboard::boardBinding = false,
 	 Soundboard::soundBinding = false,
 	 Soundboard::globalBinding = false;
 
+ConfigFile *Soundboard::config;
 
 void Soundboard::initialize() {
 	eventMap.insert({"SBPlaySound", SBPlaySound});
@@ -39,6 +40,7 @@ void Soundboard::initialize() {
 	eventMap.insert({"SBStopSounds", SBStopSounds});
 	eventMap.insert({"SetAudio1", SetAudio1});
 	eventMap.insert({"SetAudio2", SetAudio2});
+	eventMap.insert({"SBConfigSet", SBConfigSet});
 	
 	eventMap.insert({"GUIReset", GUIReset});
 	eventMap.insert({"Shutdown", Shutdown});
@@ -58,7 +60,7 @@ void Soundboard::initialize() {
 	logf("Starting keyboard hook:\n");
 	KeyboardHook::initialize();
 	
-	loadConfig();
+	ConfigHandler::loadConfig("SBConfig");
 	
 	loadBindings("resources/config/keybindings" , &globalBindings);
 }
@@ -204,6 +206,10 @@ void Soundboard::SetAudio2(EngineEvent event) {
 	saveConfig();
 }
 
+void Soundboard::SBConfigSet(EngineEvent event) {
+	ConfigHandler::saveConfig(ConfigHandler::getConfig("SBConfig"));
+}
+
 void Soundboard::GUIReset(EngineEvent event) {
 	boardBindings.clear();
 	soundBindings.clear();
@@ -232,6 +238,8 @@ void Soundboard::Shutdown(EngineEvent event) {
 	KeyboardHook::uninitialize();
 	SBAudio::uninit();
 }
+
+
 
 
 void Soundboard::loadBoards() {

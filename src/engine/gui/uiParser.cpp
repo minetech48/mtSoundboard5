@@ -3,9 +3,30 @@
 #include "uiParser.h"
 #include "engine/logger.h"
 
+ConfigFile *UIParser::globalConfig;
+
 void UIParser::parseUIElement(UIElement* elementPtr, YAML::Node root) {
 	if (root["position"]) elementPtr->defPosition = root["position"].as<vec2i>();
 	if (root["size"]) elementPtr->defSize = root["size"].as<vec2i>();
+	
+	if (root["globalConfig"]) {
+		globalConfig = ConfigHandler::getConfig(root["globalConfig"].as<std::string>());
+	}
+	
+	if (root["bind"]) {//config bound switch
+		if (root["config"])
+			elementPtr->bindPtr = &ConfigHandler::getConfig(root["config"].as<std::string>())->
+				boolMap[root["bind"].as<std::string>()];
+		else if (globalConfig != NULL)
+			elementPtr->bindPtr = &globalConfig->
+				boolMap[root["bind"].as<std::string>()];
+		else
+			logf("Error parsing UIElement: globalConfig not found!\n");
+			
+		if (elementPtr->bindPtr != NULL) {
+			elementPtr->active = *(bool*) elementPtr->bindPtr;
+		}
+	}
 	
 	if (root["elements"]) {
 		YAML::Node elements = root["elements"];
@@ -19,6 +40,10 @@ void UIParser::parseUIElement(UIElement* elementPtr, YAML::Node root) {
 	
 	root.remove("position");
 	root.remove("size");
+	
+	root.remove("globalConfig");
+	root.remove("config");
+	root.remove("bind");
 	
 	root.remove("elements");
 	

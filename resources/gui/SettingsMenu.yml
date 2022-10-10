@@ -2,6 +2,8 @@ position: [25, 25]
 size: [-25, -25]
 drawBackground:
 
+globalConfig: SBConfig
+
 elements:
   
   SettingsContainer:
@@ -79,6 +81,28 @@ elements:
             text: setAudio2
             
             onClick: SetAudio2
+    
+      SwitchContainer:
+        position: [2, 0]
+        
+        elements:
+          Switch1:
+            position: [0, 0]
+            size: [200, 30]
+            
+            text: Switch1
+            
+            bind: configSetting1
+            onClick: configSet
+            
+          Switch2:
+            position: [0, 40]
+            size: [200, 30]
+            
+            text: Switch2
+            
+            bind: configSetting2
+            onClick: SBConfigSet
 
   CloseButton:
     position: [-5, 5]

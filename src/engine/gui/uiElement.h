@@ -20,6 +20,8 @@ struct UIElement {
 	int scroll = 0;
 	int listActive = -1;
 	
+	void *bindPtr = NULL;
+	
 	//metadata examples
 	//onClick
 	//type
@@ -65,7 +67,8 @@ struct UIElement {
 	bool isFocusable() {return !isContainer() || isList();}
 	
 	bool isButton() {return containsData("onClick") || containsData("onDoubleClick");}
-	bool isSwitch() {return containsData("toggle");}
+	bool isToggleButton() {return containsData("toggle");}
+	bool isSwitch() {return bindPtr != NULL;}
 	bool isList() {return containsData("listName");}
 	
 	
