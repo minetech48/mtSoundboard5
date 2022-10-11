@@ -51,6 +51,15 @@ void Soundboard::initialize() {
 	GUIData::addStringHandler("SBSoundBind", soundStringHandler);
 	GUIData::addStringHandler("keybindings", keybindingsHandler);
 	
+	config = ConfigHandler::loadConfig("SBConfig");
+	
+	#ifdef unix
+		if (config->intMap["SecondaryKeyboardID"] != 0)
+			logf("Using secondary keyboard (id): %d\n", config->intMap["SecondaryKeyboardID"]);
+	#endif
+	
+	ConfigHandler::saveConfig(config);
+	
 	loadBoards();
 	
 	logf("Starting audio player:\n");
@@ -59,8 +68,6 @@ void Soundboard::initialize() {
 	
 	logf("Starting keyboard hook:\n");
 	KeyboardHook::initialize();
-	
-	ConfigHandler::loadConfig("SBConfig");
 	
 	loadBindings("resources/config/keybindings" , &globalBindings);
 }
@@ -86,6 +93,14 @@ void Soundboard::SDLEventHandler(SDL_Event event) {
 		case SDL_KEYDOWN:{
 			int keyCode = event.key.keysym.sym;
 			//logf("SDLKey %d: %d\n", event.key.padding2, keyCode);
+			
+			//disabling locks as per congfig
+			if (!config->boolMap["UseCapslock"])
+				event.key.keysym.mod&= ~KMOD_CAPS;
+			if (!config->boolMap["UseNumlock"])
+				event.key.keysym.mod&= ~KMOD_NUM;
+			if (!config->boolMap["UseScrolllock"])
+				event.key.keysym.mod&= ~KMOD_SCROLL;
 			
 			keyCode = keyCode | (event.key.keysym.mod << 8);
 			//hijacking padding2 to determine where keypress originates
@@ -196,18 +211,27 @@ void Soundboard::SBClearBinding(EngineEvent event) {
 }
 
 void Soundboard::SetAudio1(EngineEvent event) {
-	SBAudio::engineIndex = GUIData::getElement("SettingsMenu.DeviceList")->listActive;
-	GUIData::setString("AudioDevice1", SBAudio::playbackInfos[SBAudio::engineIndex].name);
-	saveConfig();
+	SBAudio::deviceIndex = GUIData::getElement("SettingsMenu.DeviceList")->listActive;
+	
+	GUIData::setString("AudioDevice1", SBAudio::playbackInfos[SBAudio::deviceIndex].name);
+	config->stringMap["AudioDevice1"] = SBAudio::playbackInfos[SBAudio::deviceIndex].name;
+	
+	ConfigHandler::saveConfig(config);
 }
 void Soundboard::SetAudio2(EngineEvent event) {
-	SBAudio::engineIndex2 = GUIData::getElement("SettingsMenu.DeviceList")->listActive;
-	GUIData::setString("AudioDevice2", SBAudio::playbackInfos[SBAudio::engineIndex2].name);
-	saveConfig();
+	SBAudio::deviceIndex2 = GUIData::getElement("SettingsMenu.DeviceList")->listActive;
+	
+	GUIData::setString("AudioDevice2", SBAudio::playbackInfos[SBAudio::deviceIndex2].name);
+	config->stringMap["AudioDevice2"] = SBAudio::playbackInfos[SBAudio::deviceIndex2].name;
+	
+	ConfigHandler::saveConfig(config);
 }
 
 void Soundboard::SBConfigSet(EngineEvent event) {
-	ConfigHandler::saveConfig(ConfigHandler::getConfig("SBConfig"));
+	if (config == NULL)
+		config = ConfigHandler::getConfig("SBConfig");
+		
+	ConfigHandler::saveConfig(config);
 }
 
 void Soundboard::GUIReset(EngineEvent event) {
@@ -317,34 +341,6 @@ void Soundboard::saveBindings(std::string filePath, bimap<std::string, int>* bin
 	for (auto& entry : bindingMap->valuesMap) {
 		file << entry.first + ":" + std::to_string(entry.second) + '\n';
 	}
-	file.close();
-}
-
-void Soundboard::loadConfig() {
-	std::ifstream file(CONFIG_DIR + "SBConfig.txt");
-	
-	if (file.is_open()) {
-		logf("Loading config file.\n");
-		std::string line;
-		
-		std::getline(file, line);
-		SBAudio::engineIndex = std::stoi(line);
-		std::getline(file, line);
-		SBAudio::engineIndex2 = std::stoi(line);
-		
-		GUIData::setString("AudioDevice1", SBAudio::playbackInfos[SBAudio::engineIndex].name);
-		GUIData::setString("AudioDevice2", SBAudio::playbackInfos[SBAudio::engineIndex2].name);
-		
-		file.close();
-	}
-}
-void Soundboard::saveConfig() {
-	std::ofstream file;
-	file.open(CONFIG_DIR + "SBConfig.txt");
-	
-	file << SBAudio::engineIndex << '\n';
-	file << SBAudio::engineIndex2 << '\n';
-	
 	file.close();
 }
 

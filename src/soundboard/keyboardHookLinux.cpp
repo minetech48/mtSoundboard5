@@ -87,6 +87,10 @@ void KeyboardHook::pollEvents() {
 			modCaseToggle(SDLK_SCROLLLOCK, KMOD_SCROLL)
 		}
 		
+		int kbid = Soundboard::config->intMap["SecondaryKeyboardID"];
+		if (kbid != 0 && eventData->sourceid != kbid)
+			continue;
+		
 		SDL_Event testEvent;
 		testEvent.type = cookie->evtype == 13 ? SDL_KEYDOWN : SDL_KEYUP;
 		testEvent.key.keysym.sym = keycode;

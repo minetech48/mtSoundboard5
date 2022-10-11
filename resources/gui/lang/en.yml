@@ -25,6 +25,8 @@ clearBinding: Clear Binding
 
 clearGUI: Clear
 
+BindSwitchTextbox: Toggle use of lock keys
+
 bind:PushToTalk: Push To Talk
 bind:SBStopSounds: Stop Audio
 bind:SBPlayCurrent: Play Selected

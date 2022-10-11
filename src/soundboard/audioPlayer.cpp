@@ -5,7 +5,7 @@
 #define MINIAUDIO_IMPLEMENTATION
 #include "miniaudio.h"
 
-int SBAudio::engineIndex = 0, SBAudio::engineIndex2 = 0;
+int SBAudio::deviceIndex = 0, SBAudio::deviceIndex2 = 0;
 
 ma_engine_config SBAudio::engineConfig;
 ma_resource_manager SBAudio::resourceManager;
@@ -68,10 +68,15 @@ void SBAudio::initialize() {
 		playbackEngines.push_back(engine);
 		
 		deviceNames->push_back(playbackInfos[i].name);
+		
+		if (Soundboard::config->stringMap["AudioDevice1"] == playbackInfos[i].name)
+			deviceIndex = i;
+		if (Soundboard::config->stringMap["AudioDevice2"] == playbackInfos[i].name)
+			deviceIndex2 = i;
 	}
 	
-	GUIData::setString("AudioDevice1", SBAudio::playbackInfos[SBAudio::engineIndex].name);
-	GUIData::setString("AudioDevice2", SBAudio::playbackInfos[SBAudio::engineIndex2].name);
+	GUIData::setString("AudioDevice1", SBAudio::playbackInfos[SBAudio::deviceIndex].name);
+	GUIData::setString("AudioDevice2", SBAudio::playbackInfos[SBAudio::deviceIndex2].name);
 	
 	logf("\tSuccess!\n");
 }
@@ -121,9 +126,9 @@ void startAudioFile(ma_engine* engine, std::string path) {
 void SBAudio::playSound(std::string path) {
 	logf("playing sound: %s\n", path.c_str());
 	
-	if (engineIndex > 0 && engineIndex < playbackEngines.size())
-		startAudioFile(playbackEngines[engineIndex], path);
+	if (deviceIndex > 0 && deviceIndex < playbackEngines.size())
+		startAudioFile(playbackEngines[deviceIndex], path);
 	
-	if (engineIndex2 > 0 && engineIndex2 < playbackEngines.size() && engineIndex != engineIndex2)
-		startAudioFile(playbackEngines[engineIndex2], path);
+	if (deviceIndex2 > 0 && deviceIndex2 < playbackEngines.size() && deviceIndex != deviceIndex2)
+		startAudioFile(playbackEngines[deviceIndex2], path);
 }

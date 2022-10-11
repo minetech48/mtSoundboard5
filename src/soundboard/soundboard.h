@@ -24,9 +24,10 @@ class Soundboard : public EngineSystem {
 	
 	static bool boardBinding, soundBinding, globalBinding;
 	
-	static ConfigFile *config;
-	
 	public:
+	
+		static ConfigFile *config;
+		
 		Soundboard() {title = "Soundboard";}
 		
 		void initialize();
@@ -72,9 +73,6 @@ class Soundboard : public EngineSystem {
 	
 	static void loadBindings(std::string filePath, bimap<std::string, int>* bindingMap);
 	static void saveBindings(std::string filePath, bimap<std::string, int>* bindingMap);
-	
-	static void loadConfig();
-	static void saveConfig();
 };
 
 
@@ -89,7 +87,7 @@ class SBAudio {
 		static ma_device_info *playbackInfos;
 		static ma_uint32 playbackInfoSize;
 		
-		static int engineIndex, engineIndex2;
+		static int deviceIndex, deviceIndex2;
 		static std::unordered_set<ma_sound*> activeSounds;
 		
 		static void initialize();
