@@ -9,6 +9,7 @@
 #include <X11/Xlib.h>
 #include <X11/extensions/XInput2.h>
 #include <X11/XKBlib.h>
+#include <X11/extensions/XTest.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_syswm.h>
 #include <chrono>
@@ -87,15 +88,19 @@ void KeyboardHook::pollEvents() {
 			modCaseToggle(SDLK_SCROLLLOCK, KMOD_SCROLL)
 		}
 		
-		int kbid = Soundboard::config->intMap["SecondaryKeyboardID"];
-		if (kbid != 0 && eventData->sourceid != kbid)
-			continue;
-		
 		SDL_Event testEvent;
+		
+		int kbid = Soundboard::config->intMap["SecondaryKeyboardID"];
+		if (kbid != 0 && eventData->sourceid != kbid && Soundboard::globalBinding == false)
+			testEvent.key.padding2 = 0;//hijacking variable to determine where keypress originates
+		else
+			testEvent.key.padding2 = 1;
+			
 		testEvent.type = cookie->evtype == 13 ? SDL_KEYDOWN : SDL_KEYUP;
 		testEvent.key.keysym.sym = keycode;
 		testEvent.key.keysym.mod = modifierMask;
-		testEvent.key.padding2 = 1;//hijacking variable to determine where keypress originates
+		//testEvent.key.padding2 = 1;//hijacking variable to determine where keypress originates
+		testEvent.key.padding3 = xkey;//hijacking for naitive keycode
 		
 		Soundboard::SDLEventHandler(testEvent);
 		
@@ -104,5 +109,17 @@ void KeyboardHook::pollEvents() {
 }
 #undef modCase
 #undef modCaseToggle
+
+std::string KeyboardHook::toString(int keyCode) {
+	if (keyCode == 0) return "";
+	return Soundboard::keyToString(XKeyToSDLKey(keyCode & 0xFF0000FF) | (keyCode & 0xFFFF00));
+}
+
+void KeyboardHook::pressPTTKey() {
+	XTestFakeKeyEvent(xdisplay, Soundboard::globalBindings.getValue("PushToTalk") & 0xFF0000FF, true, 0);
+}
+void KeyboardHook::releasePTTKey() {
+	XTestFakeKeyEvent(xdisplay, Soundboard::globalBindings.getValue("PushToTalk") & 0xFF0000FF, false, 0);
+}
 
 #endif

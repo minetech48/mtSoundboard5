@@ -34,6 +34,14 @@ file(GLOB_RECURSE soundboard_sources
 add_executable(${PROJECT_NAME} ${soundboard_sources} ${engine_sources})
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${engine_sources})
-target_link_libraries(${PROJECT_NAME} PRIVATE
-	mtEngine3
-)
+
+if (UNIX)
+	target_link_libraries(${PROJECT_NAME} PRIVATE
+		Xtst
+		mtEngine3
+	)
+else()
+	target_link_libraries(${PROJECT_NAME} PRIVATE
+		mtEngine3
+	)
+endif()

@@ -20,6 +20,8 @@ bimap<std::string, int> Soundboard::globalBindings;
 
 std::string Soundboard::currentBoard;
 
+bool holdingPTT = false;
+
 bool Soundboard::boardBinding = false,
 	 Soundboard::soundBinding = false,
 	 Soundboard::globalBinding = false;
@@ -81,6 +83,18 @@ void Soundboard::update() {
 	KeyboardHook::pollEvents();
 	
 	SBAudio::update();
+	
+	if (SBAudio::activeSounds.size() > 0) {
+		if (!holdingPTT) {
+			holdingPTT = true;
+			KeyboardHook::pressPTTKey();
+		}
+	}else{
+		if (holdingPTT) {
+			holdingPTT = false;
+			KeyboardHook::releasePTTKey();
+		}
+	}
 }
 
 void Soundboard::SDLEventInput(SDL_Event event) {
@@ -103,13 +117,15 @@ void Soundboard::SDLEventHandler(SDL_Event event) {
 				event.key.keysym.mod&= ~KMOD_SCROLL;
 			
 			keyCode = keyCode | (event.key.keysym.mod << 8);
+			int naitiveKey = event.key.padding3 | (event.key.keysym.mod << 8);
 			//hijacking padding2 to determine where keypress originates
 			bool localKey = !event.key.padding2;
 			
 			if (globalBinding) {
-				if (localKey)
+				if (!localKey)
 					setBinding(&globalBindings,
-						GUIData::getElement("SettingsMenu.KeybindList")->getReturnValue(), keyCode);
+						GUIData::getElement("SettingsMenu.KeybindList")->getReturnValue(), 
+							naitiveKey);
 			}else if (boardBinding) {
 				if (localKey)
 					setBinding(&boardBindings,
@@ -121,11 +137,14 @@ void Soundboard::SDLEventHandler(SDL_Event event) {
 						GUIData::getElement("SoundsList")->getReturnValue(), keyCode);
 				break;
 			}
+			
+			if (naitiveKey != 0 &&globalBindings.keysMap.contains(naitiveKey)
+					&& globalBindings.getKey(naitiveKey) != "PushToTalk")
+				EngineCore::broadcast(globalBindings.getKey(naitiveKey));
+			
 			if (localKey) break;
 			
-			if (globalBindings.keysMap.contains(keyCode) && globalBindings.getKey(keyCode) != "PushToTalk")
-				EngineCore::broadcast(globalBindings.getKey(keyCode));
-			else if (boardBindings.keysMap.contains(keyCode))
+			if (boardBindings.keysMap.contains(keyCode))
 				EngineCore::broadcast("SBSelectBoard", boardBindings.getKey(keyCode));
 			else {
 				#define playsound(key) \
@@ -161,6 +180,19 @@ void Soundboard::SDLEventHandler(SDL_Event event) {
 			}
 			break;
 	}
+}
+bool KeyboardHook::naitiveKeySet(int keyCode) {
+	ConfigFile* config = ConfigHandler::getConfig("runtime");
+	
+	if (config->boolMap["bindPTT"]) {
+		Soundboard::config->intMap["PTTKey"] = keyCode;
+		
+		config->boolMap["bindPTT"] = false;
+		
+		return true;
+	}
+	
+	return false;
 }
 
 
@@ -379,5 +411,5 @@ std::string Soundboard::soundStringHandler(std::string str) {
 	return keyToString(soundBindings.getValue(str));
 }
 std::string Soundboard::keybindingsHandler(std::string str) {
-	return keyToString(globalBindings.getValue(str));
+	return KeyboardHook::toString(globalBindings.getValue(str));
 }

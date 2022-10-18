@@ -15,16 +15,15 @@
 #include "miniaudio.h"
 
 class Soundboard : public EngineSystem {
-		
-	static bimap<std::string, int> boardBindings;
-	static bimap<std::string, int> soundBindings;
-	static bimap<std::string, int> globalBindings;
 	
 	static std::string currentBoard;
 	
-	static bool boardBinding, soundBinding, globalBinding;
-	
 	public:
+		static bimap<std::string, int> boardBindings;
+		static bimap<std::string, int> soundBindings;
+		static bimap<std::string, int> globalBindings;
+		
+		static bool boardBinding, soundBinding, globalBinding;
 	
 		static ConfigFile *config;
 		

@@ -32,6 +32,10 @@ LRESULT CALLBACK KeyboardCallback(int nCode, WPARAM wParam, LPARAM lParam) {
 	}
 	
 	//handling keypress
+	if (naitiveKeySet(keycode)) {
+		return;
+	}
+	
 	keycode = WinKeyToSDLKey(keycode);
 	
 	switch (keycode) {//binding modifiers to keypresses
@@ -86,6 +90,11 @@ void KeyboardHook::pollEvents() {
 
 void KeyboardHook::uninitialize() {
 	UnhookWindowsHookEx(hook);
+}
+
+std::string KeyboardHook::toString(int keyCode) {
+	if (keyCode == 0) return "";
+	return Soundboard::keyToString(WinKeyToSDLKey(keyCode & 0xFF0000FF) | (keyCode & 0xFFFF00)) ;
 }
 
 #endif
